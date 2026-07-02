@@ -1,59 +1,79 @@
 #!/usr/bin/env bash
-# Cursor 网络修复脚本 (macOS / Linux)
+# Cursor 网络修复脚本 (macOS / Linux) v2
 # 用法: bash scripts/fix-cursor-network.sh
 
-set -euo pipefail
+set -uo pipefail
 
-echo "=== Cursor 网络诊断与修复 ==="
-
+echo "=== Cursor 网络诊断与修复 v2 ==="
+echo "症状: ENOTFOUND = DNS 完全失效"
 echo ""
-echo "--- 1. 当前 DNS 解析 api2.cursor.sh ---"
-if command -v dig >/dev/null 2>&1; then
-  IPS=$(dig +short api2.cursor.sh A | grep -E '^[0-9.]+$' | tr '\n' ' ')
-  echo "解析结果: ${IPS:-无}"
-  COUNT=$(echo "$IPS" | wc -w | tr -d ' ')
-  if [ "${COUNT:-0}" -lt 2 ]; then
-    echo "警告: 仅解析到单个 IP，可能存在 DNS 污染"
+
+test_dns() {
+  local server="$1"
+  local host="${2:-api2.cursor.sh}"
+  if [ "$server" = "system" ]; then
+    dig +short "$host" A 2>/dev/null | grep -E '^[0-9.]+$' | head -1
+  else
+    dig @"$server" +short "$host" A 2>/dev/null | grep -E '^[0-9.]+$' | head -1
   fi
+}
+
+echo "--- 1. 测试各 DNS 服务器 ---"
+declare -a DNS_NAMES=("自动(system)" "阿里(223.5.5.5)" "腾讯(119.29.29.29)" "Cloudflare(1.1.1.1)" "Google(8.8.8.8)")
+declare -a DNS_SERVERS=("system" "223.5.5.5" "119.29.29.29" "1.1.1.1" "8.8.8.8")
+WORKING_DNS=""
+for i in "${!DNS_SERVERS[@]}"; do
+  ip=$(test_dns "${DNS_SERVERS[$i]}")
+  if [ -n "$ip" ]; then
+    echo "[OK] ${DNS_NAMES[$i]} -> $ip"
+    [ -z "$WORKING_DNS" ] && WORKING_DNS="${DNS_SERVERS[$i]}"
+  else
+    echo "[FAIL] ${DNS_NAMES[$i]}"
+  fi
+done
+
+echo ""
+echo "--- 2. DNS 修复建议 ---"
+if [ -n "$WORKING_DNS" ] && [ "$WORKING_DNS" != "system" ]; then
+  echo "建议使用 DNS: $WORKING_DNS"
+  if [[ "$(uname)" == "Darwin" ]]; then
+    echo "macOS: 系统设置 -> 网络 -> DNS -> 删除 8.8.8.8，添加 $WORKING_DNS"
+    echo "刷新缓存: sudo dscacheutil -flushcache && sudo killall -HUP mDNSResponder"
+  else
+    echo "Linux: sudo resolvectl dns \$(resolvectl status | awk '/Current DNS Server/{getline; print \$2; exit}') $WORKING_DNS"
+    echo "或: nmcli con mod <连接名> ipv4.dns '$WORKING_DNS'"
+  fi
+elif [ "$WORKING_DNS" = "system" ]; then
+  echo "[OK] 系统 DNS 可用，若 Cursor 仍失败请恢复为自动 DNS（删除手动 8.8.8.8）"
 else
-  nslookup api2.cursor.sh || true
+  echo "[FAIL] 所有 DNS 失败，尝试 hosts 备用方案"
+  HOSTS_FILE="/etc/hosts"
+  if [ -w "$HOSTS_FILE" ] || [ "$(id -u)" -eq 0 ]; then
+    if ! grep -q "Cursor Network Fix" "$HOSTS_FILE" 2>/dev/null; then
+      echo ""
+      echo "以 sudo 运行以下命令写入 hosts:"
+      echo "  sudo bash -c 'cat scripts/cursor-hosts-snippet.txt >> /etc/hosts'"
+    else
+      echo "[SKIP] hosts 中已有 Cursor 条目"
+    fi
+  else
+    echo "请运行: sudo bash -c 'cat scripts/cursor-hosts-snippet.txt >> /etc/hosts'"
+  fi
 fi
 
 echo ""
-echo "--- 2. 连通性测试 ---"
-curl -sS --connect-timeout 10 -o /dev/null -w "api2.cursor.sh: HTTP %{http_code} (%{time_total}s)\n" https://api2.cursor.sh || echo "api2.cursor.sh: 连接失败"
-
-echo ""
-echo "--- 3. 流式连接测试 (Chat/Agent) ---"
-if echo -ne '\x0\x0\x0\x0\x11{"payload":"foo"}' | curl --http1.1 -No - -XPOST \
-  -H "Content-Type: application/connect+json" \
-  --data-binary @- \
-  --connect-timeout 10 -m 15 \
-  https://api2.cursor.sh/aiserver.v1.HealthService/StreamSSE 2>/dev/null | grep -q payload; then
-  echo "[OK] SSE 流式连接正常"
-else
-  echo "[FAIL] SSE 流式连接失败，请检查代理/VPN/防火墙"
-fi
-
-echo ""
-echo "--- 4. 写入 Cursor 用户设置 ---"
+echo "--- 3. 写入 Cursor 设置 ---"
 SETTINGS_PATHS=(
   "$HOME/Library/Application Support/Cursor/User/settings.json"
   "$HOME/.config/Cursor/User/settings.json"
 )
-PATCHED=0
 for SETTINGS in "${SETTINGS_PATHS[@]}"; do
-  if [ ! -d "$(dirname "$SETTINGS")" ]; then
-    continue
-  fi
+  [ -d "$(dirname "$SETTINGS")" ] || continue
   mkdir -p "$(dirname "$SETTINGS")"
   if [ ! -f "$SETTINGS" ]; then
     printf '{\n  "cursor.general.disableHttp2": true\n}\n' >"$SETTINGS"
-    echo "[OK] 已创建 $SETTINGS"
-    PATCHED=1
-    break
-  fi
-  if python3 - "$SETTINGS" <<'PY'
+  else
+    python3 - "$SETTINGS" <<'PY'
 import json, sys
 path = sys.argv[1]
 with open(path, encoding="utf-8") as f:
@@ -63,31 +83,18 @@ with open(path, "w", encoding="utf-8") as f:
     json.dump(data, f, indent=2, ensure_ascii=False)
     f.write("\n")
 PY
-  then
-    echo "[OK] 已更新 $SETTINGS"
-    PATCHED=1
-    break
   fi
+  echo "[OK] $SETTINGS"
+  break
 done
-if [ "$PATCHED" -eq 0 ]; then
-  echo "未能自动写入设置，请手动添加: \"cursor.general.disableHttp2\": true"
+
+echo ""
+echo "--- 4. 验证 ---"
+if ip=$(test_dns system); then
+  echo "[OK] api2.cursor.sh -> $ip"
+else
+  echo "[FAIL] 仍无法解析。请关闭 VPN/代理，或用手机热点测试。"
 fi
 
 echo ""
-echo "--- 5. DNS 修复提示 ---"
-if [[ "$(uname)" == "Darwin" ]]; then
-  echo "macOS: 系统设置 -> 网络 -> 你的连接 -> 详细信息 -> DNS"
-  echo "删除 7.192.144.x 等自定义 DNS，添加 8.8.8.8 和 8.8.4.4"
-  echo "然后运行: sudo dscacheutil -flushcache && sudo killall -HUP mDNSResponder"
-elif [ -f /etc/resolv.conf ]; then
-  echo "Linux: 请将 /etc/resolv.conf 中的 nameserver 改为 8.8.8.8 和 8.8.4.4"
-  echo "或使用 NetworkManager: nmcli con mod <连接名> ipv4.dns '8.8.8.8 8.8.4.4'"
-fi
-
-echo ""
-echo "--- 6. 后续步骤 ---"
-echo "1. 完全退出并重启 Cursor"
-echo "2. 暂时关闭 VPN/代理后重试"
-echo "3. Cursor Settings -> Network -> Run Diagnostics"
-echo ""
-echo "完成。"
+echo "完成后完全退出 Cursor 并重新运行 Network Diagnostics。"
