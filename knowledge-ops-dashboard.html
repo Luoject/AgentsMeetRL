@@ -1,0 +1,1212 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>知识底座运维运营周报看板 | 2026-06-22 ~ 2026-06-28</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --surface: #1e293b;
+            --surface-2: #334155;
+            --border: #475569;
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+            --primary: #3b82f6;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --purple: #a855f7;
+            --cyan: #06b6d4;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .dashboard {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #1e3a5f 0%, #1e293b 50%, #312e81 100%);
+            border-radius: 16px;
+            padding: 32px 40px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(59,130,246,0.15) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 16px;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+
+        .header-meta {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            background: rgba(59,130,246,0.2);
+            border: 1px solid rgba(59,130,246,0.4);
+            color: #93c5fd;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+
+        .header-sub {
+            margin-top: 8px;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            position: relative;
+        }
+
+        /* Navigation */
+        .nav-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--bg);
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-tab {
+            padding: 8px 18px;
+            border-radius: 8px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .nav-tab:hover, .nav-tab.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        /* KPI Cards */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .kpi-card {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 20px 24px;
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .kpi-card::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+        }
+
+        .kpi-card.blue::after { background: var(--primary); }
+        .kpi-card.green::after { background: var(--success); }
+        .kpi-card.orange::after { background: var(--warning); }
+        .kpi-card.purple::after { background: var(--purple); }
+
+        .kpi-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+        }
+
+        .kpi-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .kpi-card.blue .kpi-value { color: #60a5fa; }
+        .kpi-card.green .kpi-value { color: #4ade80; }
+        .kpi-card.orange .kpi-value { color: #fbbf24; }
+        .kpi-card.purple .kpi-value { color: #c084fc; }
+
+        .kpi-sub {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 6px;
+        }
+
+        .kpi-sub .up { color: var(--success); }
+        .kpi-sub .down { color: var(--danger); }
+
+        /* Sections */
+        .section {
+            margin-bottom: 32px;
+        }
+
+        .section-title {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            padding-left: 12px;
+            border-left: 4px solid var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-num {
+            background: var(--primary);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        /* Grid layouts */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .card-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .chart-wrap {
+            position: relative;
+            height: 280px;
+        }
+
+        .chart-wrap.tall { height: 360px; }
+
+        /* Tables */
+        .table-wrap {
+            overflow-x: auto;
+            border-radius: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        th {
+            background: var(--surface-2);
+            color: var(--text-muted);
+            font-weight: 600;
+            text-align: left;
+            padding: 10px 14px;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 9px 14px;
+            border-bottom: 1px solid rgba(71,85,105,0.5);
+            color: var(--text);
+        }
+
+        tr:hover td { background: rgba(59,130,246,0.05); }
+
+        .num { text-align: right; font-variant-numeric: tabular-nums; }
+        .highlight { color: #60a5fa; font-weight: 600; }
+
+        /* Progress bars */
+        .progress-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .progress-label {
+            width: 180px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            flex-shrink: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .progress-track {
+            flex: 1;
+            height: 8px;
+            background: var(--surface-2);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.6s ease;
+        }
+
+        .progress-val {
+            width: 60px;
+            text-align: right;
+            font-size: 0.8rem;
+            font-variant-numeric: tabular-nums;
+            flex-shrink: 0;
+        }
+
+        /* SLA gauge */
+        .sla-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .sla-item {
+            text-align: center;
+            padding: 16px;
+            background: var(--surface-2);
+            border-radius: 10px;
+        }
+
+        .sla-num {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .sla-num.success { color: var(--success); }
+        .sla-num.info { color: var(--cyan); }
+        .sla-num.warn { color: var(--warning); }
+
+        .sla-desc {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* Resource meters */
+        .meter-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .meter {
+            background: var(--surface-2);
+            border-radius: 10px;
+            padding: 14px;
+        }
+
+        .meter-title {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .meter-bar {
+            height: 12px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 6px;
+        }
+
+        .meter-fill {
+            height: 100%;
+            border-radius: 6px;
+        }
+
+        .meter-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* Action items */
+        .action-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .action-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px 20px;
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+        }
+
+        .action-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .action-icon.warn { background: rgba(245,158,11,0.2); }
+        .action-icon.info { background: rgba(59,130,246,0.2); }
+        .action-icon.danger { background: rgba(239,68,68,0.2); }
+
+        .action-content h4 {
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+        }
+
+        .action-content p {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+        }
+
+        .action-meta {
+            margin-left: auto;
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        .action-owner {
+            font-size: 0.8rem;
+            color: #93c5fd;
+        }
+
+        .action-deadline {
+            font-size: 0.75rem;
+            color: var(--warning);
+            margin-top: 2px;
+        }
+
+        /* Contacts */
+        .contacts-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        .contact-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px;
+            text-align: center;
+        }
+
+        .contact-role {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .contact-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #93c5fd;
+        }
+
+        .contact-id {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 24px;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            border-top: 1px solid var(--border);
+            margin-top: 16px;
+        }
+
+        @media (max-width: 1200px) {
+            .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+            .contacts-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 640px) {
+            .kpi-grid { grid-template-columns: 1fr; }
+            .sla-grid { grid-template-columns: 1fr; }
+            .contacts-grid { grid-template-columns: 1fr; }
+            .dashboard { padding: 12px; }
+        }
+
+        @media print {
+            body { background: white; color: black; }
+            .nav-tabs { display: none; }
+            .card, .kpi-card, .header { border: 1px solid #ccc; background: white; }
+        }
+    </style>
+</head>
+<body>
+<div class="dashboard">
+    <!-- Header -->
+    <div class="header">
+        <div class="header-top">
+            <div>
+                <h1>知识底座运维运营周报看板</h1>
+                <p class="header-sub">编制：知识底座运维组</p>
+            </div>
+            <div class="header-meta">
+                <span class="badge">📅 2026-06-22 ~ 2026-06-28</span>
+                <span class="badge">📊 第26周</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="nav-tabs">
+        <a class="nav-tab active" href="#summary">本周摘要</a>
+        <a class="nav-tab" href="#knowledge-base">底座知识库</a>
+        <a class="nav-tab" href="#pipeline">知识产线</a>
+        <a class="nav-tab" href="#search">知识搜索服务</a>
+        <a class="nav-tab" href="#maas">GTS MaaS</a>
+        <a class="nav-tab" href="#actions">问题与改进</a>
+    </nav>
+
+    <!-- KPI Summary -->
+    <section id="summary" class="section">
+        <div class="kpi-grid">
+            <div class="kpi-card blue">
+                <div class="kpi-label">知识库语料总量</div>
+                <div class="kpi-value">411.6万</div>
+                <div class="kpi-sub">本周新增 <span class="up">+92,065</span> · 日落 <span class="down">-2,344</span></div>
+            </div>
+            <div class="kpi-card green">
+                <div class="kpi-label">语料入网成功率</div>
+                <div class="kpi-value">99.86%</div>
+                <div class="kpi-sub">平均 SLA <span class="up">14 min/篇</span> · 处理 170,949 篇</div>
+            </div>
+            <div class="kpi-card orange">
+                <div class="kpi-label">搜索服务调用次数</div>
+                <div class="kpi-value">66.3万</div>
+                <div class="kpi-sub">较上周 <span class="up">+43,899</span> · 峰值 QPS <span class="up">43</span></div>
+            </div>
+            <div class="kpi-card purple">
+                <div class="kpi-label">模型 Token 消耗总量</div>
+                <div class="kpi-value">3.61亿</div>
+                <div class="kpi-sub">主力模型 Qwen-S-pro · 调用 116,856 次</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 2: Knowledge Base -->
+    <section id="knowledge-base" class="section">
+        <div class="section-title"><span class="section-num">二</span>底座知识库</div>
+        <div class="grid-2">
+            <div class="card">
+                <div class="card-title">本周新增语料 Top 知识组</div>
+                <div class="chart-wrap">
+                    <canvas id="chartKnowledgeGroups"></canvas>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">语料入库概览（按数据源）</div>
+                <div class="chart-wrap">
+                    <canvas id="chartDataSources"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="card" style="margin-top:16px">
+            <div class="card-title" style="text-align:left">入库语料明细表</div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>数据源</th>
+                            <th>板块</th>
+                            <th>在线/离线</th>
+                            <th class="num">数据量（篇）</th>
+                            <th>更新周期</th>
+                            <th>库内最新数据日期</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableDataSources"></tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 3: Pipeline -->
+    <section id="pipeline" class="section">
+        <div class="section-title"><span class="section-num">三</span>知识产线</div>
+        <div class="sla-grid">
+            <div class="sla-item">
+                <div class="sla-num info">170,949</div>
+                <div class="sla-desc">本周处理语料总量（篇）</div>
+            </div>
+            <div class="sla-item">
+                <div class="sla-num success">99.86%</div>
+                <div class="sla-desc">语料解析成功率</div>
+            </div>
+            <div class="sla-item">
+                <div class="sla-num warn">14 min</div>
+                <div class="sla-desc">语料入网平均 SLA / 篇</div>
+            </div>
+        </div>
+        <div class="grid-2">
+            <div class="card">
+                <div class="card-title">语料入网失败原因分布（237 篇失败）</div>
+                <div class="chart-wrap tall">
+                    <canvas id="chartFailures"></canvas>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">失败原因明细</div>
+                <div id="failureBars" style="padding-top:8px"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 4: Search -->
+    <section id="search" class="section">
+        <div class="section-title"><span class="section-num">四</span>知识搜索服务</div>
+        <div class="kpi-grid" style="grid-template-columns: repeat(3,1fr); margin-bottom:16px">
+            <div class="kpi-card blue">
+                <div class="kpi-label">搜索消费语料</div>
+                <div class="kpi-value" style="font-size:1.4rem">805,502 篇</div>
+                <div class="kpi-sub">占知识库总量 <span class="up">19.08%</span></div>
+            </div>
+            <div class="kpi-card orange">
+                <div class="kpi-label">零消费语料占比</div>
+                <div class="kpi-value" style="font-size:1.4rem; color:#fbbf24">33.9%</div>
+                <div class="kpi-sub">需专项分析语料价值</div>
+            </div>
+            <div class="kpi-card green">
+                <div class="kpi-label">CSS 集群存储</div>
+                <div class="kpi-value" style="font-size:1.4rem; color:#4ade80">74%</div>
+                <div class="kpi-sub">总容量 27TB · CPU 30% · 内存 48%</div>
+            </div>
+        </div>
+        <div class="grid-2">
+            <div class="card">
+                <div class="card-title">调用搜索服务 Top 应用</div>
+                <div class="chart-wrap">
+                    <canvas id="chartApps"></canvas>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">知识组搜索命中 Top 10</div>
+                <div class="chart-wrap tall">
+                    <canvas id="chartSearchHits"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="grid-2" style="margin-top:16px">
+            <div class="card">
+                <div class="card-title">EC2 主机资源利用率</div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>主机名称</th>
+                                <th class="num">CPU 均值</th>
+                                <th class="num">CPU 峰值</th>
+                                <th class="num">内存均值</th>
+                                <th class="num">内存峰值</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>kwephis41482604</td>
+                                <td class="num">2.13%</td>
+                                <td class="num highlight">19.80%</td>
+                                <td class="num">40.20%</td>
+                                <td class="num">47.80%</td>
+                            </tr>
+                            <tr>
+                                <td>kwephis41482609</td>
+                                <td class="num">1.81%</td>
+                                <td class="num">19.30%</td>
+                                <td class="num">31.70%</td>
+                                <td class="num">35.50%</td>
+                            </tr>
+                            <tr>
+                                <td>kwephis41482598</td>
+                                <td class="num">1.31%</td>
+                                <td class="num">9.40%</td>
+                                <td class="num">29.40%</td>
+                                <td class="num">38.70%</td>
+                            </tr>
+                            <tr>
+                                <td>kwephis41482613</td>
+                                <td class="num">1.41%</td>
+                                <td class="num">11.40%</td>
+                                <td class="num">25.40%</td>
+                                <td class="num">28.10%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="meter-grid" style="margin-top:16px">
+                    <div class="meter">
+                        <div class="meter-title">EC2 CPU 平均 / 峰值</div>
+                        <div class="meter-bar"><div class="meter-fill" style="width:1.71%;background:#3b82f6"></div></div>
+                        <div class="meter-stats"><span>平均 1.71%</span><span>峰值 19.8%</span></div>
+                    </div>
+                    <div class="meter">
+                        <div class="meter-title">EC2 内存平均 / 峰值</div>
+                        <div class="meter-bar"><div class="meter-fill" style="width:31.68%;background:#22c55e"></div></div>
+                        <div class="meter-stats"><span>平均 31.68%</span><span>峰值 47.8%</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">CSS 集群资源概览</div>
+                <div class="meter-grid">
+                    <div class="meter">
+                        <div class="meter-title">CPU 使用率</div>
+                        <div class="meter-bar"><div class="meter-fill" style="width:30%;background:#f59e0b"></div></div>
+                        <div class="meter-stats"><span>平均 30%</span></div>
+                    </div>
+                    <div class="meter">
+                        <div class="meter-title">内存使用率</div>
+                        <div class="meter-bar"><div class="meter-fill" style="width:48%;background:#a855f7"></div></div>
+                        <div class="meter-stats"><span>平均 48%</span></div>
+                    </div>
+                    <div class="meter" style="grid-column: span 2">
+                        <div class="meter-title">存储使用率（27TB 总容量）</div>
+                        <div class="meter-bar"><div class="meter-fill" style="width:74%;background:#ef4444"></div></div>
+                        <div class="meter-stats"><span>已使用 74%</span><span>约 19.98 TB</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 5: MaaS -->
+    <section id="maas" class="section">
+        <div class="section-title"><span class="section-num">五</span>GTS MaaS 大模型服务</div>
+        <div class="grid-2">
+            <div class="card">
+                <div class="card-title">各模型 Token 消耗分布</div>
+                <div class="chart-wrap">
+                    <canvas id="chartModels"></canvas>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">各 APPID Token 消耗</div>
+                <div class="chart-wrap">
+                    <canvas id="chartAppTokens"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="card" style="margin-top:16px">
+            <div class="card-title" style="text-align:left">模型调用明细表</div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>APPID</th>
+                            <th>模型</th>
+                            <th class="num">消耗 Token</th>
+                            <th class="num">调用次数</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableMaas"></tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 6: Actions -->
+    <section id="actions" class="section">
+        <div class="section-title"><span class="section-num">六</span>问题与改进</div>
+        <div class="action-list">
+            <div class="action-item">
+                <div class="action-icon warn">⚠️</div>
+                <div class="action-content">
+                    <h4>【解析】其他失败原因占比过大</h4>
+                    <p>语料失败原因中"【解析】其他"失败原因不明，占比较大（1,858 次）。需解析组优化解析结果返回，给出修复计划。</p>
+                </div>
+                <div class="action-meta">
+                    <div class="action-owner">尹林枫</div>
+                    <div class="action-deadline">截止：7月30日前</div>
+                </div>
+            </div>
+            <div class="action-item">
+                <div class="action-icon info">📉</div>
+                <div class="action-content">
+                    <h4>搜索服务 EC2 CPU 使用率偏低</h4>
+                    <p>EC2 主机 CPU 平均使用率仅 1.71%，资源利用率不足。需分析原因并给出提升利用率计划。</p>
+                </div>
+                <div class="action-meta">
+                    <div class="action-owner">郭嘉伦、王梁</div>
+                    <div class="action-deadline">截止：7月30日前</div>
+                </div>
+            </div>
+            <div class="action-item">
+                <div class="action-icon danger">📊</div>
+                <div class="action-content">
+                    <h4>零消费语料占比过高（33.9%）</h4>
+                    <p>大量语料未被搜索消费，需捞出具体数据专项分析语料价值，优化知识库质量。</p>
+                </div>
+                <div class="action-meta">
+                    <div class="action-owner">吴亦章</div>
+                    <div class="action-deadline">截止：7月30日前</div>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top:24px">
+            <div class="section-title" style="font-size:1rem;border-left-color:#a855f7">运维运营团队接口人</div>
+            <div class="contacts-grid">
+                <div class="contact-card">
+                    <div class="contact-role">知识产线 & 语料入网</div>
+                    <div class="contact-name">唐熊</div>
+                    <div class="contact-id">60049465</div>
+                </div>
+                <div class="contact-card">
+                    <div class="contact-role">知识搜索 & 底座知识库</div>
+                    <div class="contact-name">郭嘉伦</div>
+                    <div class="contact-id">30060574</div>
+                </div>
+                <div class="contact-card">
+                    <div class="contact-role">资源使用率</div>
+                    <div class="contact-name">王梁</div>
+                    <div class="contact-id">60086520</div>
+                </div>
+                <div class="contact-card">
+                    <div class="contact-role">GTS LLM 模型</div>
+                    <div class="contact-name">常宏</div>
+                    <div class="contact-id">30056551</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="footer">
+        知识底座运维运营周报看板 · 数据周期 2026-06-22 ~ 2026-06-28 · 编制：知识底座运维组
+    </div>
+</div>
+
+<script>
+const COLORS = ['#3b82f6','#22c55e','#f59e0b','#ef4444','#a855f7','#06b6d4','#ec4899','#84cc16','#f97316','#6366f1','#14b8a6','#e879f9'];
+
+Chart.defaults.color = '#94a3b8';
+Chart.defaults.borderColor = 'rgba(71,85,105,0.5)';
+Chart.defaults.font.family = "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif";
+
+function fmt(n) {
+    if (n >= 1e8) return (n/1e8).toFixed(2) + '亿';
+    if (n >= 1e4) return (n/1e4).toFixed(1) + '万';
+    return n.toLocaleString('zh-CN');
+}
+
+// --- Data ---
+const knowledgeGroups = [
+    { name: 'ICT网络技术', count: 58844 },
+    { name: '(未打标签)', count: 29664 },
+    { name: '服务业务架构设计', count: 1157 },
+    { name: 'ICT运维服务', count: 1123 },
+    { name: '服务研发技术与测试', count: 624 },
+    { name: '政企服务业务管理', count: 264 },
+    { name: '平台与支撑业务', count: 175 },
+    { name: '咨询', count: 115 },
+    { name: '交付项目管理', count: 105 },
+    { name: '能力发展服务', count: 75 },
+];
+
+const dataSources = [
+    { source: 'support', section: '文档', type: '在线', count: 580290, cycle: '天级刷新', date: '2026-07-01' },
+    { source: 'support', section: '案例', type: '在线', count: 119868, cycle: '天级刷新', date: '2026-07-02' },
+    { source: 'support', section: '案例(iCase)', type: '在线', count: 772103, cycle: '天级刷新', date: '2026-07-02' },
+    { source: 'support', section: '公告', type: '在线', count: 57688, cycle: '天级刷新', date: '2026-07-02' },
+    { source: 'supportE', section: '文档', type: '在线', count: 153995, cycle: '天级刷新', date: '2026-07-01' },
+    { source: 'supportE', section: '案例', type: '在线', count: 117953, cycle: '天级刷新', date: '2026-07-03' },
+    { source: 'supportE', section: '公告', type: '在线', count: 31334, cycle: '天级刷新', date: '2026-07-02' },
+    { source: 'iTSC', section: '方案库', type: '在线', count: 40384, cycle: '天级刷新', date: '2026-07-01' },
+    { source: '3MS', section: '社区/文档', type: '在线', count: 736544, cycle: '天级刷新', date: '2026-07-02' },
+    { source: 'isup', section: '咨询文档', type: '在线', count: 2463, cycle: '天级刷新', date: '2026-07-02' },
+    { source: 'getit', section: '文档', type: '在线', count: 587546, cycle: '天级刷新', date: '2026-07-01' },
+    { source: 'linstar', section: '洞察报告', type: '在线', count: 10234, cycle: '天级刷新', date: '2026-06-27' },
+    { source: 'O3社区', section: '论坛等', type: '在线', count: 50745, cycle: '天级刷新', date: '2026-07-02' },
+    { source: 'MCD', section: '政企营销资料', type: '在线', count: 32906, cycle: '天级刷新', date: '2026-07-02' },
+    { source: '稼先社区', section: '社区帖子', type: '离线', count: 261919, cycle: '一次性采集', date: '2026-05-27' },
+    { source: 'PDMC+', section: '流程', type: '离线', count: 22267, cycle: '一次性采集', date: '2026-06-24' },
+    { source: '华为案例', section: '案例', type: '离线', count: 62438, cycle: '一次性采集', date: '2026-03-04' },
+    { source: '2012Labs', section: '突击队等', type: '离线', count: 16862, cycle: '一次性采集', date: '2026-06-22' },
+    { source: 'Whatsell', section: '营销/文档', type: '离线', count: 6357, cycle: '一次性采集', date: '2026-06-15' },
+    { source: 'Wiki', section: '知识库', type: '在线', count: 60642, cycle: '天级刷新', date: '2026-07-02' },
+];
+
+const failures = [
+    { reason: '【解析】其他', count: 1858 },
+    { reason: '【采集】数据异常，内容为空', count: 375 },
+    { reason: '【解析】解析超时', count: 357 },
+    { reason: '【解析】文件无法读取', count: 204 },
+    { reason: '【解析】文件转化失败', count: 166 },
+    { reason: '【解析】入库失败需补偿', count: 52 },
+    { reason: '【解析】解析后内容为空', count: 36 },
+    { reason: '【解析】jsonl不存在', count: 19 },
+    { reason: '【解析】内置文件为空', count: 12 },
+    { reason: '【解析】文件解压缩失败', count: 11 },
+];
+
+const searchApps = [
+    { name: 'Webot智能问答', count: 130777 },
+    { name: 'GTS LLM 体验中心', count: 1499 },
+    { name: 'Getit谛听', count: 656 },
+];
+
+const searchHits = [
+    { name: 'ICT网络技术', hits: 6577984, pct: 94.20 },
+    { name: '服务业务架构设计', hits: 136551, pct: 1.96 },
+    { name: '政企服务业务管理', hits: 119485, pct: 1.71 },
+    { name: '云核心网', hits: 42311, pct: 0.61 },
+    { name: '全球共享服务中心', hits: 14486, pct: 0.21 },
+    { name: '咨询', hits: 13810, pct: 0.20 },
+    { name: '中国区技术交付', hits: 7462, pct: 0.11 },
+    { name: 'ICT运维服务', hits: 7014, pct: 0.10 },
+    { name: '商业咨询', hits: 6387, pct: 0.09 },
+    { name: '平台与支撑业务', hits: 6338, pct: 0.09 },
+];
+
+const maasData = [
+    { app: 'S007555', model: 'Qwen-S-pro', tokens: 117480718, calls: 55128 },
+    { app: 'S007555', model: 'GTSLLM-Pro-Moe', tokens: 473694, calls: 73 },
+    { app: 'S007555', model: 'GTSLLM-Lite-Moe', tokens: 84653, calls: 209 },
+    { app: 'S007555', model: 'Pangu-S-pocket', tokens: 15381, calls: 32 },
+    { app: 'S02638', model: 'Qwen-S-pro', tokens: 120319475, calls: 55223 },
+    { app: 'S02638', model: 'DeepSeek-R1', tokens: 92124259, calls: 34119 },
+    { app: 'S02638', model: 'GTSLLM-Pro-Moe', tokens: 8792699, calls: 2797 },
+    { app: 'S02638', model: 'GTSLLM-VL-Standard', tokens: 6099178, calls: 2429 },
+    { app: 'S02638', model: 'GTSLLM-Lite-Moe', tokens: 152470, calls: 60 },
+    { app: 'S007556', model: 'Qwen-S-pro', tokens: 12383157, calls: 6503 },
+    { app: 'S007556', model: 'DeepSeek-R1', tokens: 2989722, calls: 340 },
+    { app: 'S007556', model: 'GTSLLM-Pro-Moe', tokens: 22907, calls: 19 },
+    { app: 'S007556', model: 'GTSLLM-Lite-Moe', tokens: 38255, calls: 75 },
+    { app: 'gtstools', model: 'Qwen-S-pro', tokens: 10597, calls: 2 },
+];
+
+// --- Populate tables ---
+document.getElementById('tableDataSources').innerHTML = dataSources.map(d => `
+    <tr>
+        <td>${d.source}</td>
+        <td>${d.section}</td>
+        <td>${d.type}</td>
+        <td class="num highlight">${d.count.toLocaleString('zh-CN')}</td>
+        <td>${d.cycle}</td>
+        <td>${d.date}</td>
+    </tr>
+`).join('');
+
+document.getElementById('tableMaas').innerHTML = maasData.map(d => `
+    <tr>
+        <td>${d.app}</td>
+        <td>${d.model}</td>
+        <td class="num highlight">${d.tokens.toLocaleString('zh-CN')}</td>
+        <td class="num">${d.calls.toLocaleString('zh-CN')}</td>
+    </tr>
+`).join('');
+
+// Failure progress bars
+const maxFail = failures[0].count;
+document.getElementById('failureBars').innerHTML = failures.map((f, i) => `
+    <div class="progress-row">
+        <div class="progress-label" title="${f.reason}">${f.reason}</div>
+        <div class="progress-track">
+            <div class="progress-fill" style="width:${(f.count/maxFail*100).toFixed(1)}%;background:${COLORS[i%COLORS.length]}"></div>
+        </div>
+        <div class="progress-val">${f.count.toLocaleString('zh-CN')}</div>
+    </div>
+`).join('');
+
+// --- Charts ---
+const chartOpts = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+        legend: { labels: { padding: 12, boxWidth: 12 } }
+    }
+};
+
+// Knowledge groups horizontal bar
+new Chart(document.getElementById('chartKnowledgeGroups'), {
+    type: 'bar',
+    data: {
+        labels: knowledgeGroups.map(k => k.name),
+        datasets: [{
+            label: '新增语料（篇）',
+            data: knowledgeGroups.map(k => k.count),
+            backgroundColor: COLORS.map(c => c + 'cc'),
+            borderColor: COLORS,
+            borderWidth: 1,
+            borderRadius: 4,
+        }]
+    },
+    options: {
+        ...chartOpts,
+        indexAxis: 'y',
+        plugins: {
+            ...chartOpts.plugins,
+            legend: { display: false },
+            tooltip: {
+                callbacks: {
+                    label: ctx => ` ${ctx.parsed.x.toLocaleString('zh-CN')} 篇`
+                }
+            }
+        },
+        scales: {
+            x: { grid: { color: 'rgba(71,85,105,0.3)' }, ticks: { callback: v => fmt(v) } },
+            y: { grid: { display: false } }
+        }
+    }
+});
+
+// Data sources doughnut (aggregated by source)
+const sourceAgg = {};
+dataSources.forEach(d => {
+    sourceAgg[d.source] = (sourceAgg[d.source] || 0) + d.count;
+});
+const sortedSources = Object.entries(sourceAgg).sort((a,b) => b[1]-a[1]);
+
+new Chart(document.getElementById('chartDataSources'), {
+    type: 'doughnut',
+    data: {
+        labels: sortedSources.map(s => s[0]),
+        datasets: [{
+            data: sortedSources.map(s => s[1]),
+            backgroundColor: COLORS,
+            borderWidth: 2,
+            borderColor: '#1e293b',
+        }]
+    },
+    options: {
+        ...chartOpts,
+        plugins: {
+            ...chartOpts.plugins,
+            tooltip: {
+                callbacks: {
+                    label: ctx => {
+                        const total = ctx.dataset.data.reduce((a,b)=>a+b,0);
+                        const pct = ((ctx.parsed/total)*100).toFixed(1);
+                        return ` ${ctx.label}: ${ctx.parsed.toLocaleString('zh-CN')} 篇 (${pct}%)`;
+                    }
+                }
+            }
+        }
+    }
+});
+
+// Failures pie
+new Chart(document.getElementById('chartFailures'), {
+    type: 'doughnut',
+    data: {
+        labels: failures.map(f => f.reason),
+        datasets: [{
+            data: failures.map(f => f.count),
+            backgroundColor: COLORS,
+            borderWidth: 2,
+            borderColor: '#1e293b',
+        }]
+    },
+    options: {
+        ...chartOpts,
+        plugins: {
+            legend: { position: 'right', labels: { font: { size: 10 }, padding: 8, boxWidth: 10 } },
+            tooltip: {
+                callbacks: {
+                    label: ctx => ` ${ctx.parsed.toLocaleString('zh-CN')} 次`
+                }
+            }
+        }
+    }
+});
+
+// Search apps
+new Chart(document.getElementById('chartApps'), {
+    type: 'bar',
+    data: {
+        labels: searchApps.map(a => a.name),
+        datasets: [{
+            label: '调用次数',
+            data: searchApps.map(a => a.count),
+            backgroundColor: ['#3b82f6','#22c55e','#f59e0b'],
+            borderRadius: 6,
+        }]
+    },
+    options: {
+        ...chartOpts,
+        plugins: { legend: { display: false } },
+        scales: {
+            y: { grid: { color: 'rgba(71,85,105,0.3)' }, ticks: { callback: v => fmt(v) } },
+            x: { grid: { display: false } }
+        }
+    }
+});
+
+// Search hits horizontal
+new Chart(document.getElementById('chartSearchHits'), {
+    type: 'bar',
+    data: {
+        labels: searchHits.map(s => s.name),
+        datasets: [{
+            label: '命中次数',
+            data: searchHits.map(s => s.hits),
+            backgroundColor: '#3b82f6cc',
+            borderColor: '#3b82f6',
+            borderWidth: 1,
+            borderRadius: 4,
+        }]
+    },
+    options: {
+        ...chartOpts,
+        indexAxis: 'y',
+        plugins: { legend: { display: false } },
+        scales: {
+            x: { grid: { color: 'rgba(71,85,105,0.3)' }, ticks: { callback: v => fmt(v) } },
+            y: { grid: { display: false }, ticks: { font: { size: 11 } } }
+        }
+    }
+});
+
+// Model token consumption
+const modelAgg = {};
+maasData.forEach(d => {
+    modelAgg[d.model] = (modelAgg[d.model] || 0) + d.tokens;
+});
+const sortedModels = Object.entries(modelAgg).sort((a,b) => b[1]-a[1]);
+
+new Chart(document.getElementById('chartModels'), {
+    type: 'pie',
+    data: {
+        labels: sortedModels.map(m => m[0]),
+        datasets: [{
+            data: sortedModels.map(m => m[1]),
+            backgroundColor: COLORS,
+            borderWidth: 2,
+            borderColor: '#1e293b',
+        }]
+    },
+    options: {
+        ...chartOpts,
+        plugins: {
+            tooltip: {
+                callbacks: {
+                    label: ctx => ` ${fmt(ctx.parsed)} Token`
+                }
+            }
+        }
+    }
+});
+
+// APP token consumption
+const appAgg = {};
+maasData.forEach(d => {
+    appAgg[d.app] = (appAgg[d.app] || 0) + d.tokens;
+});
+
+new Chart(document.getElementById('chartAppTokens'), {
+    type: 'bar',
+    data: {
+        labels: Object.keys(appAgg),
+        datasets: [{
+            label: 'Token 消耗',
+            data: Object.values(appAgg),
+            backgroundColor: ['#3b82f6','#a855f7','#22c55e','#f59e0b'],
+            borderRadius: 6,
+        }]
+    },
+    options: {
+        ...chartOpts,
+        plugins: { legend: { display: false },
+            tooltip: { callbacks: { label: ctx => ` ${fmt(ctx.parsed.y)} Token` } }
+        },
+        scales: {
+            y: { grid: { color: 'rgba(71,85,105,0.3)' }, ticks: { callback: v => fmt(v) } },
+            x: { grid: { display: false } }
+        }
+    }
+});
+
+// Nav tab scroll highlight
+const tabs = document.querySelectorAll('.nav-tab');
+const sections = document.querySelectorAll('.section');
+window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+        if (window.scrollY >= s.offsetTop - 120) current = s.id;
+    });
+    tabs.forEach(t => {
+        t.classList.toggle('active', t.getAttribute('href') === '#' + current);
+    });
+});
+</script>
+</body>
+</html>
