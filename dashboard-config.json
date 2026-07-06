@@ -1,0 +1,20 @@
+{
+  "dashboardUrl": "https://luoject.github.io/AgentsMeetRL/",
+  "dashboardUrlFallback": "https://htmlpreview.github.io/?https://raw.githubusercontent.com/Luoject/AgentsMeetRL/gh-pages/index.html",
+  "reportPeriod": "2026-06-22 ~ 2026-06-28",
+  "reportTitle": "知识底座运维运营周报",
+  "team": "知识底座运维组",
+  "smtp": {
+    "host": "smtp.example.com",
+    "port": 465,
+    "useSsl": true,
+    "username": "your-email@example.com",
+    "password": "your-password-or-app-token"
+  },
+  "email": {
+    "from": "知识底座运维组 <your-email@example.com>",
+    "to": ["recipient1@example.com", "recipient2@example.com"],
+    "cc": [],
+    "subject": "【知识底座运维运营周报】2026-06-22 ~ 2026-06-28"
+  }
+}

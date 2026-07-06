@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>知识底座运维运营周报</title>
+</head>
+<body style="margin:0;padding:0;background:#f4f6f9;font-family:'Microsoft YaHei','PingFang SC',Arial,sans-serif;color:#1f2937;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f6f9;padding:24px 0;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="680" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.08);">
+          <!-- Header -->
+          <tr>
+            <td style="background:linear-gradient(135deg,#1e3a5f,#312e81);padding:32px 36px;color:#ffffff;">
+              <div style="font-size:22px;font-weight:700;margin-bottom:8px;">知识底座运维运营周报</div>
+              <div style="font-size:14px;opacity:0.9;">编制：知识底座运维组 &nbsp;|&nbsp; 周期：2026-06-22 ~ 2026-06-28</div>
+            </td>
+          </tr>
+
+          <!-- CTA Button -->
+          <tr>
+            <td style="padding:28px 36px 8px;text-align:center;">
+              <a href="{{DASHBOARD_URL}}" target="_blank"
+                 style="display:inline-block;background:#2563eb;color:#ffffff;text-decoration:none;padding:14px 36px;border-radius:8px;font-size:16px;font-weight:600;">
+                📊 点击查看完整交互看板
+              </a>
+              <div style="font-size:12px;color:#6b7280;margin-top:10px;">
+                若按钮无法点击，请复制链接到浏览器打开：<br>
+                <a href="{{DASHBOARD_URL}}" style="color:#2563eb;word-break:break-all;">{{DASHBOARD_URL}}</a>
+              </div>
+            </td>
+          </tr>
+
+          <!-- KPI Summary -->
+          <tr>
+            <td style="padding:20px 36px;">
+              <div style="font-size:16px;font-weight:700;margin-bottom:14px;border-left:4px solid #2563eb;padding-left:10px;">一、本周摘要</div>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td width="50%" style="padding:6px;">
+                    <table role="presentation" width="100%" style="background:#eff6ff;border-radius:8px;padding:16px;">
+                      <tr><td style="font-size:12px;color:#6b7280;">知识库语料总量</td></tr>
+                      <tr><td style="font-size:24px;font-weight:700;color:#2563eb;padding-top:4px;">411.6 万篇</td></tr>
+                      <tr><td style="font-size:12px;color:#16a34a;padding-top:4px;">本周新增 +92,065 · 日落 -2,344</td></tr>
+                    </table>
+                  </td>
+                  <td width="50%" style="padding:6px;">
+                    <table role="presentation" width="100%" style="background:#f0fdf4;border-radius:8px;padding:16px;">
+                      <tr><td style="font-size:12px;color:#6b7280;">语料入网成功率</td></tr>
+                      <tr><td style="font-size:24px;font-weight:700;color:#16a34a;padding-top:4px;">99.86%</td></tr>
+                      <tr><td style="font-size:12px;color:#6b7280;padding-top:4px;">平均 SLA 14 min/篇</td></tr>
+                    </table>
+                  </td>
+                </tr>
+                <tr>
+                  <td width="50%" style="padding:6px;">
+                    <table role="presentation" width="100%" style="background:#fffbeb;border-radius:8px;padding:16px;">
+                      <tr><td style="font-size:12px;color:#6b7280;">搜索服务调用次数</td></tr>
+                      <tr><td style="font-size:24px;font-weight:700;color:#d97706;padding-top:4px;">66.3 万次</td></tr>
+                      <tr><td style="font-size:12px;color:#16a34a;padding-top:4px;">较上周 +43,899 · 峰值 QPS 43</td></tr>
+                    </table>
+                  </td>
+                  <td width="50%" style="padding:6px;">
+                    <table role="presentation" width="100%" style="background:#faf5ff;border-radius:8px;padding:16px;">
+                      <tr><td style="font-size:12px;color:#6b7280;">模型 Token 消耗总量</td></tr>
+                      <tr><td style="font-size:24px;font-weight:700;color:#9333ea;padding-top:4px;">3.61 亿</td></tr>
+                      <tr><td style="font-size:12px;color:#6b7280;padding-top:4px;">主力模型 Qwen-S-pro</td></tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Key Tables -->
+          <tr>
+            <td style="padding:8px 36px 20px;">
+              <div style="font-size:16px;font-weight:700;margin-bottom:12px;border-left:4px solid #2563eb;padding-left:10px;">二、重点关注</div>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;font-size:13px;">
+                <tr style="background:#f9fafb;">
+                  <td style="padding:10px 14px;font-weight:600;border-bottom:1px solid #e5e7eb;">事项</td>
+                  <td style="padding:10px 14px;font-weight:600;border-bottom:1px solid #e5e7eb;">责任人</td>
+                  <td style="padding:10px 14px;font-weight:600;border-bottom:1px solid #e5e7eb;">截止</td>
+                </tr>
+                <tr>
+                  <td style="padding:10px 14px;border-bottom:1px solid #f3f4f6;">【解析】其他失败原因占比过大</td>
+                  <td style="padding:10px 14px;border-bottom:1px solid #f3f4f6;">尹林枫</td>
+                  <td style="padding:10px 14px;border-bottom:1px solid #f3f4f6;">7月30日前</td>
+                </tr>
+                <tr>
+                  <td style="padding:10px 14px;border-bottom:1px solid #f3f4f6;">EC2 CPU 使用率偏低</td>
+                  <td style="padding:10px 14px;border-bottom:1px solid #f3f4f6;">郭嘉伦、王梁</td>
+                  <td style="padding:10px 14px;border-bottom:1px solid #f3f4f6;">7月30日前</td>
+                </tr>
+                <tr>
+                  <td style="padding:10px 14px;">零消费语料占比 33.9%</td>
+                  <td style="padding:10px 14px;">吴亦章</td>
+                  <td style="padding:10px 14px;">7月30日前</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="padding:20px 36px 32px;border-top:1px solid #e5e7eb;font-size:12px;color:#9ca3af;text-align:center;">
+              本邮件由知识底座运维组自动发送 · 完整图表与明细请访问
+              <a href="{{DASHBOARD_URL}}" style="color:#2563eb;">交互看板</a>
+              <br><br>
+              接口人：唐熊(产线) · 郭嘉伦(搜索/知识库) · 王梁(资源) · 常宏(LLM)
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
