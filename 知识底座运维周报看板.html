@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>知识底座运维运营周报看板 | 2026-06-29 ~ 2026-07-05</title>
+<style>
+:root {
+  --bg:#0f172a;--surface:#1e293b;--surface-2:#334155;--border:#475569;
+  --text:#f1f5f9;--muted:#94a3b8;--primary:#3b82f6;--success:#22c55e;
+  --warning:#f59e0b;--danger:#ef4444;--purple:#a855f7;--cyan:#06b6d4;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+.dashboard{max-width:1600px;margin:0 auto;padding:24px}
+.header{background:linear-gradient(135deg,#1e3a5f,#1e293b 50%,#312e81);border-radius:16px;padding:32px 40px;margin-bottom:24px;border:1px solid var(--border);position:relative;overflow:hidden}
+.header::before{content:'';position:absolute;top:-50%;right:-10%;width:400px;height:400px;background:radial-gradient(circle,rgba(59,130,246,.15),transparent 70%)}
+.header-top{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:16px;position:relative}
+.header h1{font-size:1.75rem;font-weight:600}
+.header-sub{margin-top:8px;color:var(--muted);font-size:.95rem}
+.badge{background:rgba(59,130,246,.2);border:1px solid rgba(59,130,246,.4);color:#93c5fd;padding:6px 14px;border-radius:20px;font-size:.85rem}
+.nav-tabs{display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap;position:sticky;top:0;z-index:100;background:var(--bg);padding:12px 0;border-bottom:1px solid var(--border)}
+.nav-tab{padding:8px 18px;border-radius:8px;background:var(--surface);border:1px solid var(--border);color:var(--muted);font-size:.875rem;text-decoration:none;transition:.2s}
+.nav-tab:hover,.nav-tab.active{background:var(--primary);border-color:var(--primary);color:#fff}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.kpi-card{background:var(--surface);border-radius:12px;padding:20px 24px;border:1px solid var(--border);position:relative;overflow:hidden}
+.kpi-card::after{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.kpi-card.blue::after{background:var(--primary)}.kpi-card.green::after{background:var(--success)}
+.kpi-card.orange::after{background:var(--warning)}.kpi-card.purple::after{background:var(--purple)}
+.kpi-label{font-size:.8rem;color:var(--muted);letter-spacing:.05em;margin-bottom:8px}
+.kpi-value{font-size:1.75rem;font-weight:700}
+.kpi-card.blue .kpi-value{color:#60a5fa}.kpi-card.green .kpi-value{color:#4ade80}
+.kpi-card.orange .kpi-value{color:#fbbf24}.kpi-card.purple .kpi-value{color:#c084fc}
+.kpi-sub{font-size:.8rem;color:var(--muted);margin-top:6px}
+.up{color:var(--success)}.down{color:var(--danger)}
+.section{margin-bottom:32px}
+.section-title{font-size:1.15rem;font-weight:600;margin-bottom:16px;padding-left:12px;border-left:4px solid var(--primary);display:flex;align-items:center;gap:8px}
+.section-num{background:var(--primary);color:#fff;width:24px;height:24px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.card{background:var(--surface);border-radius:12px;padding:20px;border:1px solid var(--border)}
+.card-title{font-size:.9rem;font-weight:600;color:var(--muted);margin-bottom:16px;text-align:center}
+.table-wrap{overflow-x:auto;border-radius:8px}
+table{width:100%;border-collapse:collapse;font-size:.85rem}
+th{background:var(--surface-2);color:var(--muted);font-weight:600;text-align:left;padding:10px 14px;white-space:nowrap}
+td{padding:9px 14px;border-bottom:1px solid rgba(71,85,105,.5)}
+tr:hover td{background:rgba(59,130,246,.05)}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+.highlight{color:#60a5fa;font-weight:600}
+.sla-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:16px}
+.sla-item{text-align:center;padding:16px;background:var(--surface-2);border-radius:10px}
+.sla-num{font-size:2rem;font-weight:700}
+.sla-num.success{color:var(--success)}.sla-num.info{color:var(--cyan)}.sla-num.warn{color:var(--warning)}
+.sla-desc{font-size:.8rem;color:var(--muted);margin-top:4px}
+.meter-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.meter{background:var(--surface-2);border-radius:10px;padding:14px}
+.meter-title{font-size:.8rem;color:var(--muted);margin-bottom:8px}
+.meter-bar{height:12px;background:rgba(0,0,0,.3);border-radius:6px;overflow:hidden;margin-bottom:6px}
+.meter-fill{height:100%;border-radius:6px}
+.meter-stats{display:flex;justify-content:space-between;font-size:.75rem;color:var(--muted)}
+.progress-row{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.progress-label{width:180px;font-size:.8rem;color:var(--muted);flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.progress-track{flex:1;height:8px;background:var(--surface-2);border-radius:4px;overflow:hidden}
+.progress-fill{height:100%;border-radius:4px}
+.progress-val{width:60px;text-align:right;font-size:.8rem;flex-shrink:0}
+.donut-wrap-side{display:flex;align-items:center;justify-content:center;gap:20px;padding:16px 8px;min-height:300px}
+.donut-wrap-stack{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:16px 8px;min-height:300px}
+.donut-svg{flex-shrink:0;filter:drop-shadow(0 4px 12px rgba(0,0,0,.25))}
+.donut-legend{display:flex;flex-direction:column;gap:7px;font-size:.8rem;flex:1;min-width:110px;max-width:200px}
+.legend-item{display:flex;align-items:center;gap:8px;padding:2px 0}
+.legend-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0;box-shadow:0 1px 4px rgba(0,0,0,.3)}
+.legend-label{color:var(--muted);flex:1;line-height:1.3}
+.legend-val{color:var(--text);font-weight:600;font-size:.78rem}
+.hbar-chart{padding:10px 4px}
+.hbar-row{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.hbar-label{width:120px;font-size:.82rem;color:var(--muted);flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hbar-track{flex:1;height:26px;background:rgba(15,23,42,.5);border-radius:6px;overflow:hidden;border:1px solid rgba(71,85,105,.3)}
+.hbar-fill{height:100%;border-radius:5px;transition:width .8s cubic-bezier(.4,0,.2,1)}
+.hbar-val{width:72px;text-align:right;font-size:.8rem;font-weight:600;flex-shrink:0;color:#e2e8f0}
+.vbar-chart{display:flex;align-items:flex-end;justify-content:space-around;height:260px;padding:8px 12px 0;gap:12px}
+.vbar-item{display:flex;flex-direction:column;align-items:center;flex:1;max-width:140px;height:100%}
+.vbar-bar-wrap{flex:1;width:100%;display:flex;align-items:flex-end;justify-content:center;padding:0 4px}
+.vbar-bar{width:65%;max-width:72px;border-radius:8px 8px 0 0;min-height:6px;transition:height .8s cubic-bezier(.4,0,.2,1)}
+.vbar-label{font-size:.72rem;color:var(--muted);margin-top:10px;text-align:center;line-height:1.3;max-width:100px}
+.vbar-val{font-size:.75rem;font-weight:600;margin-top:5px;color:#e2e8f0}
+.chart-card{display:flex;flex-direction:column}
+.chart-card .card-title{margin-bottom:8px}
+.chart-card-body{flex:1;display:flex;align-items:center;justify-content:center}
+.rank-list{padding:8px}
+.rank-item{display:flex;align-items:center;gap:14px;padding:14px 12px;margin-bottom:10px;background:var(--surface-2);border-radius:10px}
+.rank-badge{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1rem;flex-shrink:0}
+.rank-badge.gold{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#1e293b}
+.rank-badge.silver{background:linear-gradient(135deg,#94a3b8,#64748b);color:#1e293b}
+.rank-badge.bronze{background:linear-gradient(135deg,#cd7f32,#a0522d);color:#fff}
+.rank-name{font-size:1rem;font-weight:600;flex:1}
+.rank-bar-wrap{flex:1;max-width:200px}
+.rank-bar{height:8px;background:var(--surface);border-radius:4px;overflow:hidden;margin-top:4px}
+.rank-bar-fill{height:100%;border-radius:4px;background:var(--primary)}
+.action-list{display:flex;flex-direction:column;gap:12px}
+.action-item{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 20px;display:flex;gap:16px;align-items:flex-start}
+.action-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.action-icon.warn{background:rgba(245,158,11,.2)}.action-icon.info{background:rgba(59,130,246,.2)}.action-icon.danger{background:rgba(239,68,68,.2)}
+.action-content h4{font-size:.9rem;margin-bottom:4px}.action-content p{font-size:.82rem;color:var(--muted)}
+.action-meta{margin-left:auto;text-align:right;flex-shrink:0}
+.action-owner{font-size:.8rem;color:#93c5fd}.action-deadline{font-size:.75rem;color:var(--warning);margin-top:2px}
+.contacts-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.contact-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center}
+.contact-role{font-size:.75rem;color:var(--muted);margin-bottom:4px}
+.contact-name{font-size:.9rem;font-weight:600;color:#93c5fd}
+.contact-id{font-size:.75rem;color:var(--muted);margin-top:2px}
+.footer{text-align:center;padding:24px;color:var(--muted);font-size:.8rem;border-top:1px solid var(--border);margin-top:16px}
+.tip-banner{background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.3);border-radius:10px;padding:12px 20px;margin-bottom:20px;font-size:.85rem;color:#93c5fd;display:flex;align-items:center;gap:10px}
+.tip-banner button{margin-left:auto;background:var(--primary);color:#fff;border:none;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:.8rem}
+@media(max-width:1200px){.kpi-grid,.grid-2,.contacts-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:640px){.kpi-grid,.grid-2,.sla-grid,.contacts-grid{grid-template-columns:1fr}.dashboard{padding:12px}}
+</style>
+</head>
+<body>
+<div class="dashboard">
+<div class="tip-banner" id="tip">📎 离线版看板 · 无需联网 · 双击本文件即可查看完整图表 <button onclick="this.parentElement.style.display='none'">知道了</button></div>
+
+<div class="header">
+  <div class="header-top">
+    <div><h1>知识底座运维运营周报看板</h1><p class="header-sub">编制：知识底座运维组</p></div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
+      <span class="badge">📅 2026-06-29 ~ 2026-07-05</span>
+      <span class="badge">📊 第27周</span>
+    </div>
+  </div>
+</div>
+
+<nav class="nav-tabs">
+  <a class="nav-tab active" href="#summary">本周摘要</a>
+  <a class="nav-tab" href="#knowledge-base">底座知识库</a>
+  <a class="nav-tab" href="#pipeline">知识产线</a>
+  <a class="nav-tab" href="#search">知识搜索服务</a>
+  <a class="nav-tab" href="#maas">GTS MaaS</a>
+  <a class="nav-tab" href="#actions">问题与改进</a>
+</nav>
+
+<section id="summary" class="section">
+<div class="kpi-grid">
+  <div class="kpi-card blue"><div class="kpi-label">知识库语料总量</div><div class="kpi-value">412.5万</div><div class="kpi-sub">本周新增 <span class="up">+169,285</span> · 日落 <span class="down">-32,575</span></div></div>
+  <div class="kpi-card green"><div class="kpi-label">语料入网成功率</div><div class="kpi-value">99.63%</div><div class="kpi-sub">平均 SLA <span style="color:#fbbf24">31 min/篇</span> · 入网 106,261 篇</div></div>
+  <div class="kpi-card orange"><div class="kpi-label">搜索服务调用次数</div><div class="kpi-value">51.8万</div><div class="kpi-sub">较上周 <span class="down">-144,020</span> · 峰值 QPS <span class="up">43</span></div></div>
+  <div class="kpi-card purple"><div class="kpi-label">模型 Token 消耗总量</div><div class="kpi-value">2.96亿</div><div class="kpi-sub">主力模型 Qwen-S-pro · 调用 48,470 次</div></div>
+</div>
+</section>
+
+<section id="knowledge-base" class="section">
+<div class="section-title"><span class="section-num">二</span>底座知识库</div>
+<div class="grid-2">
+  <div class="card">
+    <div class="card-title">本周语料 Top3 知识组</div>
+    <div class="rank-list">
+      <div class="rank-item"><div class="rank-badge gold">1</div><div><div class="rank-name">ICT网络技术</div><div class="rank-bar"><div class="rank-bar-fill" style="width:100%"></div></div></div></div>
+      <div class="rank-item"><div class="rank-badge silver">2</div><div><div class="rank-name">ICT运维服务</div><div class="rank-bar"><div class="rank-bar-fill" style="width:45%"></div></div></div></div>
+      <div class="rank-item"><div class="rank-badge bronze">3</div><div><div class="rank-name">服务业务架构设计</div><div class="rank-bar"><div class="rank-bar-fill" style="width:35%"></div></div></div></div>
+    </div>
+  </div>
+  <div class="card chart-card">
+    <div class="card-title">语料入库概览（按数据源）</div>
+    <div class="chart-card-body"><div class="donut-wrap-side"><svg class="donut-svg" width="300" height="300" viewBox="0 0 300 300"><defs><linearGradient id="dg0" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#3b82f6"/><stop offset="100%" stop-color="#60a5fa"/></linearGradient><linearGradient id="dg1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#22c55e"/><stop offset="100%" stop-color="#4ade80"/></linearGradient><linearGradient id="dg2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f59e0b"/><stop offset="100%" stop-color="#fbbf24"/></linearGradient><linearGradient id="dg3" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ef4444"/><stop offset="100%" stop-color="#f87171"/></linearGradient><linearGradient id="dg4" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#a855f7"/><stop offset="100%" stop-color="#c084fc"/></linearGradient><linearGradient id="dg5" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#06b6d4"/><stop offset="100%" stop-color="#22d3ee"/></linearGradient><linearGradient id="dg6" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ec4899"/><stop offset="100%" stop-color="#f472b6"/></linearGradient><linearGradient id="dg7" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#84cc16"/><stop offset="100%" stop-color="#a3e635"/></linearGradient><linearGradient id="dg8" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f97316"/><stop offset="100%" stop-color="#fb923c"/></linearGradient><linearGradient id="dg9" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#6366f1"/><stop offset="100%" stop-color="#818cf8"/></linearGradient><linearGradient id="dg10" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#14b8a6"/><stop offset="100%" stop-color="#2dd4bf"/></linearGradient><linearGradient id="dg11" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#e879f9"/><stop offset="100%" stop-color="#f0abfc"/></linearGradient><linearGradient id="dg12" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#3b82f6"/><stop offset="100%" stop-color="#60a5fa"/></linearGradient><linearGradient id="dg13" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#22c55e"/><stop offset="100%" stop-color="#4ade80"/></linearGradient><linearGradient id="dg14" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f59e0b"/><stop offset="100%" stop-color="#fbbf24"/></linearGradient></defs><path d="M150.0,40.0 A110,110 0 0,1 208.5,243.2 L183.0,202.5 A62,62 0 0,0 150.0,88.0Z" fill="url(#dg0)" stroke="#1e293b" stroke-width="2.5"><title>support: 153.0万 (41.1%)</title></path><path d="M208.5,243.2 A110,110 0 0,1 80.7,235.4 L110.9,198.1 A62,62 0 0,0 183.0,202.5Z" fill="url(#dg1)" stroke="#1e293b" stroke-width="2.5"><title>3MS: 73.7万 (19.8%)</title></path><path d="M80.7,235.4 A110,110 0 0,1 40.6,138.8 L88.3,143.7 A62,62 0 0,0 110.9,198.1Z" fill="url(#dg2)" stroke="#1e293b" stroke-width="2.5"><title>getit: 58.8万 (15.8%)</title></path><path d="M40.6,138.8 A110,110 0 0,1 60.1,86.6 L99.3,114.3 A62,62 0 0,0 88.3,143.7Z" fill="url(#dg3)" stroke="#1e293b" stroke-width="2.5"><title>supportE: 30.3万 (8.1%)</title></path><path d="M60.1,86.6 A110,110 0 0,1 95.8,54.3 L119.5,96.0 A62,62 0 0,0 99.3,114.3Z" fill="url(#dg4)" stroke="#1e293b" stroke-width="2.5"><title>稼先社区: 26.2万 (7.0%)</title></path><path d="M95.8,54.3 A110,110 0 0,1 106.2,49.1 L125.3,93.1 A62,62 0 0,0 119.5,96.0Z" fill="url(#dg5)" stroke="#1e293b" stroke-width="2.5"><title>华为案例: 6.2万 (1.7%)</title></path><path d="M106.2,49.1 A110,110 0 0,1 116.7,45.2 L131.2,90.9 A62,62 0 0,0 125.3,93.1Z" fill="url(#dg6)" stroke="#1e293b" stroke-width="2.5"><title>Wiki: 6.1万 (1.6%)</title></path><path d="M116.7,45.2 A110,110 0 0,1 125.8,42.7 L136.4,89.5 A62,62 0 0,0 131.2,90.9Z" fill="url(#dg7)" stroke="#1e293b" stroke-width="2.5"><title>O3社区: 5.1万 (1.4%)</title></path><path d="M125.8,42.7 A110,110 0 0,1 133.2,41.3 L140.5,88.7 A62,62 0 0,0 136.4,89.5Z" fill="url(#dg8)" stroke="#1e293b" stroke-width="2.5"><title>iTSC: 4.0万 (1.1%)</title></path><path d="M133.2,41.3 A110,110 0 0,1 139.2,40.5 L143.9,88.3 A62,62 0 0,0 140.5,88.7Z" fill="url(#dg9)" stroke="#1e293b" stroke-width="2.5"><title>MCD: 3.3万 (0.9%)</title></path><path d="M139.2,40.5 A110,110 0 0,1 143.3,40.2 L146.2,88.1 A62,62 0 0,0 143.9,88.3Z" fill="url(#dg10)" stroke="#1e293b" stroke-width="2.5"><title>PDMC+: 2.2万 (0.6%)</title></path><path d="M143.3,40.2 A110,110 0 0,1 146.5,40.1 L148.0,88.0 A62,62 0 0,0 146.2,88.1Z" fill="url(#dg11)" stroke="#1e293b" stroke-width="2.5"><title>2012Labs: 1.7万 (0.5%)</title></path><path d="M146.5,40.1 A110,110 0 0,1 148.4,40.0 L149.1,88.0 A62,62 0 0,0 148.0,88.0Z" fill="url(#dg12)" stroke="#1e293b" stroke-width="2.5"><title>linstar: 1.0万 (0.3%)</title></path><path d="M148.4,40.0 A110,110 0 0,1 149.5,40.0 L149.7,88.0 A62,62 0 0,0 149.1,88.0Z" fill="url(#dg13)" stroke="#1e293b" stroke-width="2.5"><title>Whatsell: 6,357 (0.2%)</title></path><path d="M149.5,40.0 A110,110 0 0,1 150.0,40.0 L150.0,88.0 A62,62 0 0,0 149.7,88.0Z" fill="url(#dg14)" stroke="#1e293b" stroke-width="2.5"><title>isup: 2,463 (0.1%)</title></path></svg><div class="donut-legend"><div class="legend-item"><span class="legend-dot" style="background:linear-gradient(135deg,#3b82f6,#60a5fa)"></span><span class="legend-label">support</span><span class="legend-val">41.1%</span></div><div class="legend-item"><span class="legend-dot" style="background:linear-gradient(135deg,#22c55e,#4ade80)"></span><span class="legend-label">3MS</span><span class="legend-val">19.8%</span></div><div class="legend-item"><span class="legend-dot" style="background:linear-gradient(135deg,#f59e0b,#fbbf24)"></span><span class="legend-label">getit</span><span class="legend-val">15.8%</span></div><div class="legend-item"><span class="legend-dot" style="background:linear-gradient(135deg,#ef4444,#f87171)"></span><span class="legend-label">supportE</span><span class="legend-val">8.1%</span></div><div class="legend-item"><span class="legend-dot" style="background:linear-gradient(135deg,#a855f7,#c084fc)"></span><span class="legend-label">稼先社区</span><span class="legend-val">7.0%</span></div><div class="legend-item"><span class="legend-dot" style="background:linear-gradient(135deg,#06b6d4,#22d3ee)"></span><span class="legend-label">华为案例</span><span class="legend-val">1.7%</span></div><div class="legend-item"><span class="legend-dot" style="background:linear-gradient(135deg,#ec4899,#f472b6)"></span><span class="legend-label">Wiki</span><span class="legend-val">1.6%</span></div><div class="legend-item"><span class="legend-dot" style="background:linear-gradient(135deg,#84cc16,#a3e635)"></span><span class="legend-label">O3社区</span><span class="legend-val">1.4%</span></div><div class="legend-item"><span class="legend-dot" style="background:linear-gradient(135deg,#f97316,#fb923c)"></span><span class="legend-label">iTSC</span><span class="legend-val">1.1%</span></div><div class="legend-item"><span class="legend-dot" style="background:linear-gradient(135deg,#6366f1,#818cf8)"></span><span class="legend-label">MCD</span><span class="legend-val">0.9%</span></div><div class="legend-item"><span class="legend-dot" style="background:linear-gradient(135deg,#14b8a6,#2dd4bf)"></span><span class="legend-label">PDMC+</span><span class="legend-val">0.6%</span></div><div class="legend-item"><span class="legend-dot" style="background:linear-gradient(135deg,#e879f9,#f0abfc)"></span><span class="legend-label">2012Labs</span><span class="legend-val">0.5%</span></div><div class="legend-item"><span class="legend-dot" style="background:linear-gradient(135deg,#3b82f6,#60a5fa)"></span><span class="legend-label">linstar</span><span class="legend-val">0.3%</span></div><div class="legend-item"><span class="legend-dot" style="background:linear-gradient(135deg,#22c55e,#4ade80)"></span><span class="legend-label">Whatsell</span><span class="legend-val">0.2%</span></div><div class="legend-item"><span class="legend-dot" style="background:linear-gradient(135deg,#f59e0b,#fbbf24)"></span><span class="legend-label">isup</span><span class="legend-val">0.1%</span></div></div></div></div>
+  </div>
+</div>
+<div class="card" style="margin-top:16px">
+  <div class="card-title" style="text-align:left">入库语料明细表</div>
+  <div class="table-wrap"><table>
+    <thead><tr><th>数据源</th><th>板块</th><th>在线/离线</th><th class="num">数据量（篇）</th><th>更新周期</th><th>库内最新数据日期</th></tr></thead>
+    <tbody><tr><td>support</td><td>文档</td><td>在线</td><td class="num highlight">580,290</td><td>天级刷新</td><td>2026-07-01</td></tr>
+<tr><td>support</td><td>案例</td><td>在线</td><td class="num highlight">119,868</td><td>天级刷新</td><td>2026-07-02</td></tr>
+<tr><td>support</td><td>案例(iCase)</td><td>在线</td><td class="num highlight">772,103</td><td>天级刷新</td><td>2026-07-02</td></tr>
+<tr><td>support</td><td>公告</td><td>在线</td><td class="num highlight">57,688</td><td>天级刷新</td><td>2026-07-02</td></tr>
+<tr><td>supportE</td><td>文档</td><td>在线</td><td class="num highlight">153,995</td><td>天级刷新</td><td>2026-07-01</td></tr>
+<tr><td>supportE</td><td>案例</td><td>在线</td><td class="num highlight">117,953</td><td>天级刷新</td><td>2026-07-03</td></tr>
+<tr><td>supportE</td><td>公告</td><td>在线</td><td class="num highlight">31,334</td><td>天级刷新</td><td>2026-07-02</td></tr>
+<tr><td>iTSC</td><td>方案库</td><td>在线</td><td class="num highlight">40,384</td><td>天级刷新</td><td>2026-07-01</td></tr>
+<tr><td>3MS</td><td>社区/文档</td><td>在线</td><td class="num highlight">736,544</td><td>天级刷新</td><td>2026-07-02</td></tr>
+<tr><td>isup</td><td>咨询文档</td><td>在线</td><td class="num highlight">2,463</td><td>天级刷新</td><td>2026-07-02</td></tr>
+<tr><td>getit</td><td>文档</td><td>在线</td><td class="num highlight">587,546</td><td>天级刷新</td><td>2026-07-01</td></tr>
+<tr><td>linstar</td><td>洞察报告</td><td>在线</td><td class="num highlight">10,234</td><td>天级刷新</td><td>2026-06-27</td></tr>
+<tr><td>O3社区</td><td>论坛等</td><td>在线</td><td class="num highlight">50,745</td><td>天级刷新</td><td>2026-07-02</td></tr>
+<tr><td>MCD</td><td>政企营销资料</td><td>在线</td><td class="num highlight">32,906</td><td>天级刷新</td><td>2026-07-02</td></tr>
+<tr><td>稼先社区</td><td>社区帖子</td><td>离线</td><td class="num highlight">261,919</td><td>一次性采集</td><td>2026-05-27</td></tr>
+<tr><td>PDMC+</td><td>流程</td><td>离线</td><td class="num highlight">22,267</td><td>一次性采集</td><td>2026-06-24</td></tr>
+<tr><td>华为案例</td><td>案例</td><td>离线</td><td class="num highlight">62,438</td><td>一次性采集</td><td>2026-03-04</td></tr>
+<tr><td>2012Labs</td><td>突击队等</td><td>离线</td><td class="num highlight">16,862</td><td>一次性采集</td><td>2026-06-22</td></tr>
+<tr><td>Whatsell</td><td>营销/文档</td><td>离线</td><td class="num highlight">6,357</td><td>一次性采集</td><td>2026-06-15</td></tr>
+<tr><td>Wiki</td><td>知识库</td><td>在线</td><td class="num highlight">60,642</td><td>天级刷新</td><td>2026-07-02</td></tr></tbody>
+  </table></div>
+</div>
+</section>
+
+<section id="pipeline" class="section">
+<div class="section-title"><span class="section-num">三</span>知识产线</div>
+<div class="sla-grid">
+  <div class="sla-item"><div class="sla-num info">106,261</div><div class="sla-desc">本周语料入网总量（篇）</div></div>
+  <div class="sla-item"><div class="sla-num success">99.63%</div><div class="sla-desc">语料解析成功率</div></div>
+  <div class="sla-item"><div class="sla-num warn">31 min</div><div class="sla-desc">语料入网平均 SLA / 篇</div></div>
+</div>
+<div class="grid-2">
+  <div class="card chart-card">
+    <div class="card-title">语料入网失败原因分布（387 篇 · 3,224 文件）</div>
+    <div class="chart-card-body"><div class="donut-wrap-side"><svg class="donut-svg" width="280" height="280" viewBox="0 0 280 280"><defs><linearGradient id="dg0" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#3b82f6"/><stop offset="100%" stop-color="#60a5fa"/></linearGradient><linearGradient id="dg1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#22c55e"/><stop offset="100%" stop-color="#4ade80"/></linearGradient><linearGradient id="dg2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f59e0b"/><stop offset="100%" stop-color="#fbbf24"/></linearGradient><linearGradient id="dg3" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ef4444"/><stop offset="100%" stop-color="#f87171"/></linearGradient><linearGradient id="dg4" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#a855f7"/><stop offset="100%" stop-color="#c084fc"/></linearGradient><linearGradient id="dg5" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#06b6d4"/><stop offset="100%" stop-color="#22d3ee"/></linearGradient></defs><path d="M140.0,40.0 A100,100 0 1,1 126.7,239.1 L132.3,197.5 A58,58 0 1,0 140.0,82.0Z" fill="url(#dg0)" stroke="#1e293b" stroke-width="2.5"><title>【解析】其他: 1,648 (52.1%)</title></path><path d="M126.7,239.1 A100,100 0 0,1 42.0,160.0 L83.2,151.6 A58,58 0 0,0 132.3,197.5Z" fill="url(#dg1)" stroke="#1e293b" stroke-width="2.5"><title>【采集】数据异常，内容为空: 622 (19.7%)</title></path><path d="M42.0,160.0 A100,100 0 0,1 48.9,98.7 L87.2,116.0 A58,58 0 0,0 83.2,151.6Z" fill="url(#dg2)" stroke="#1e293b" stroke-width="2.5"><title>【解析】文件转化失败: 316 (10.0%)</title></path><path d="M48.9,98.7 A100,100 0 0,1 89.1,53.9 L110.5,90.1 A58,58 0 0,0 87.2,116.0Z" fill="url(#dg3)" stroke="#1e293b" stroke-width="2.5"><title>【解析】入库失败需补偿: 307 (9.7%)</title></path><path d="M89.1,53.9 A100,100 0 0,1 125.7,41.0 L131.7,82.6 A58,58 0 0,0 110.5,90.1Z" fill="url(#dg4)" stroke="#1e293b" stroke-width="2.5"><title>【解析】文件无法读取: 197 (6.2%)</title></path><path d="M125.7,41.0 A100,100 0 0,1 140.0,40.0 L140.0,82.0 A58,58 0 0,0 131.7,82.6Z" fill="url(#dg5)" stroke="#1e293b" stroke-width="2.5"><title>【解析】解析后内容为空: 72 (2.3%)</title></path></svg><div class="donut-legend"><div class="legend-item"><span class="legend-dot" style="background:linear-gradient(135deg,#3b82f6,#60a5fa)"></span><span class="legend-label">【解析】其他</span><span class="legend-val">52.1%</span></div><div class="legend-item"><span class="legend-dot" style="background:linear-gradient(135deg,#22c55e,#4ade80)"></span><span class="legend-label">【采集】数据异常，内容为空</span><span class="legend-val">19.7%</span></div><div class="legend-item"><span class="legend-dot" style="background:linear-gradient(135deg,#f59e0b,#fbbf24)"></span><span class="legend-label">【解析】文件转化失败</span><span class="legend-val">10.0%</span></div><div class="legend-item"><span class="legend-dot" style="background:linear-gradient(135deg,#ef4444,#f87171)"></span><span class="legend-label">【解析】入库失败需补偿</span><span class="legend-val">9.7%</span></div><div class="legend-item"><span class="legend-dot" style="background:linear-gradient(135deg,#a855f7,#c084fc)"></span><span class="legend-label">【解析】文件无法读取</span><span class="legend-val">6.2%</span></div><div class="legend-item"><span class="legend-dot" style="background:linear-gradient(135deg,#06b6d4,#22d3ee)"></span><span class="legend-label">【解析】解析后内容为空</span><span class="legend-val">2.3%</span></div></div></div></div>
+  </div>
+  <div class="card">
+    <div class="card-title">失败原因明细</div>
+    <div class="progress-row"><div class="progress-label" title="【解析】其他">【解析】其他</div><div class="progress-track"><div class="progress-fill" style="width:100.0%;background:linear-gradient(90deg,#2563eb,#60a5fa)"></div></div><div class="progress-val">1,648</div></div><div class="progress-row"><div class="progress-label" title="【采集】数据异常，内容为空">【采集】数据异常，内容为空</div><div class="progress-track"><div class="progress-fill" style="width:37.7%;background:linear-gradient(90deg,#7c3aed,#a78bfa)"></div></div><div class="progress-val">622</div></div><div class="progress-row"><div class="progress-label" title="【解析】文件转化失败">【解析】文件转化失败</div><div class="progress-track"><div class="progress-fill" style="width:19.2%;background:linear-gradient(90deg,#0891b2,#22d3ee)"></div></div><div class="progress-val">316</div></div><div class="progress-row"><div class="progress-label" title="【解析】入库失败需补偿">【解析】入库失败需补偿</div><div class="progress-track"><div class="progress-fill" style="width:18.6%;background:linear-gradient(90deg,#059669,#34d399)"></div></div><div class="progress-val">307</div></div><div class="progress-row"><div class="progress-label" title="【解析】文件无法读取">【解析】文件无法读取</div><div class="progress-track"><div class="progress-fill" style="width:12.0%;background:linear-gradient(90deg,#d97706,#fbbf24)"></div></div><div class="progress-val">197</div></div><div class="progress-row"><div class="progress-label" title="【解析】解析后内容为空">【解析】解析后内容为空</div><div class="progress-track"><div class="progress-fill" style="width:4.4%;background:linear-gradient(90deg,#db2777,#f472b6)"></div></div><div class="progress-val">72</div></div><div class="progress-row"><div class="progress-label" title="【解析】任务超时">【解析】任务超时</div><div class="progress-track"><div class="progress-fill" style="width:1.5%;background:linear-gradient(90deg,#4f46e5,#818cf8)"></div></div><div class="progress-val">24</div></div><div class="progress-row"><div class="progress-label" title="【解析】文件解压缩失败">【解析】文件解压缩失败</div><div class="progress-track"><div class="progress-fill" style="width:0.7%;background:linear-gradient(90deg,#0d9488,#2dd4bf)"></div></div><div class="progress-val">11</div></div><div class="progress-row"><div class="progress-label" title="【解析】内置文件为空">【解析】内置文件为空</div><div class="progress-track"><div class="progress-fill" style="width:0.7%;background:linear-gradient(90deg,#ea580c,#fb923c)"></div></div><div class="progress-val">11</div></div><div class="progress-row"><div class="progress-label" title="【解析】解析超时">【解析】解析超时</div><div class="progress-track"><div class="progress-fill" style="width:0.5%;background:linear-gradient(90deg,#2563eb,#60a5fa)"></div></div><div class="progress-val">9</div></div><div class="progress-row"><div class="progress-label" title="【解析】jsonl不存在">【解析】jsonl不存在</div><div class="progress-track"><div class="progress-fill" style="width:0.3%;background:linear-gradient(90deg,#7c3aed,#a78bfa)"></div></div><div class="progress-val">5</div></div><div class="progress-row"><div class="progress-label" title="【解析】S3文件下载失败">【解析】S3文件下载失败</div><div class="progress-track"><div class="progress-fill" style="width:0.1%;background:linear-gradient(90deg,#0891b2,#22d3ee)"></div></div><div class="progress-val">2</div></div>
+  </div>
+</div>
+<div class="card" style="margin-top:16px">
+  <div class="card-title" style="text-align:left">MongoDB 资源利用率</div>
+  <div class="meter-grid">
+    <div class="meter"><div class="meter-title">CPU 使用率</div><div class="meter-bar"><div class="meter-fill" style="width:23.26%;background:#3b82f6"></div></div><div class="meter-stats"><span>23.26%</span></div></div>
+    <div class="meter"><div class="meter-title">内存使用率</div><div class="meter-bar"><div class="meter-fill" style="width:85.5%;background:#f59e0b"></div></div><div class="meter-stats"><span>85.5%</span></div></div>
+    <div class="meter" style="grid-column:span 2"><div class="meter-title">存储使用率</div><div class="meter-bar"><div class="meter-fill" style="width:83.28%;background:#ef4444"></div></div><div class="meter-stats"><span>83.28%</span><span style="color:#fbbf24">分片存储不均衡</span></div></div>
+  </div>
+</div>
+</section>
+
+<section id="search" class="section">
+<div class="section-title"><span class="section-num">四</span>知识搜索服务</div>
+<div class="kpi-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:16px">
+  <div class="kpi-card blue"><div class="kpi-label">搜索消费语料</div><div class="kpi-value" style="font-size:1.4rem">762,115 篇</div><div class="kpi-sub">占知识库总量 <span class="up">18.44%</span></div></div>
+  <div class="kpi-card orange"><div class="kpi-label">零消费语料占比</div><div class="kpi-value" style="font-size:1.4rem;color:#fbbf24">33.9%</div><div class="kpi-sub">需专项分析语料价值</div></div>
+  <div class="kpi-card green"><div class="kpi-label">MySQL 存储使用率</div><div class="kpi-value" style="font-size:1.4rem;color:#ef4444">84.05%</div><div class="kpi-sub">已超 80% 告警阈值 · CPU 2.27%</div></div>
+</div>
+<div class="grid-2">
+  <div class="card chart-card"><div class="card-title">调用搜索服务 Top 应用</div><div class="chart-card-body"><div class="vbar-chart"><div class="vbar-item"><div class="vbar-bar-wrap"><div class="vbar-bar" style="height:100.0%;background:linear-gradient(0deg,#2563eb,#60a5fa);box-shadow:0 -4px 16px #2563eb44" title="服务智能体体验中心: 42.4万"></div></div><div class="vbar-label">服务智能体体验中心</div><div class="vbar-val">42.4万</div></div><div class="vbar-item"><div class="vbar-bar-wrap"><div class="vbar-bar" style="height:19.5%;background:linear-gradient(0deg,#7c3aed,#a78bfa);box-shadow:0 -4px 16px #7c3aed44" title="Webot智能问答: 8.3万"></div></div><div class="vbar-label">Webot智能问答</div><div class="vbar-val">8.3万</div></div><div class="vbar-item"><div class="vbar-bar-wrap"><div class="vbar-bar" style="height:0.4%;background:linear-gradient(0deg,#0891b2,#22d3ee);box-shadow:0 -4px 16px #0891b244" title="知识一张网应用侧: 1,701"></div></div><div class="vbar-label">知识一张网应用侧</div><div class="vbar-val">1,701</div></div></div></div></div>
+  <div class="card chart-card"><div class="card-title">知识组搜索命中 Top 9</div><div class="chart-card-body"><div class="hbar-chart"><div class="hbar-row"><div class="hbar-label" title="ICT网络技术">ICT网络技术</div><div class="hbar-track"><div class="hbar-fill" style="width:100.0%;background:linear-gradient(90deg,#2563eb,#60a5fa);box-shadow:0 0 12px #2563eb55"></div></div><div class="hbar-val">502.0万</div></div><div class="hbar-row"><div class="hbar-label" title="服务架构设计">服务架构设计</div><div class="hbar-track"><div class="hbar-fill" style="width:2.6%;background:linear-gradient(90deg,#7c3aed,#a78bfa);box-shadow:0 0 12px #7c3aed55"></div></div><div class="hbar-val">12.9万</div></div><div class="hbar-row"><div class="hbar-label" title="政企服务业务管理">政企服务业务管理</div><div class="hbar-track"><div class="hbar-fill" style="width:1.9%;background:linear-gradient(90deg,#0891b2,#22d3ee);box-shadow:0 0 12px #0891b255"></div></div><div class="hbar-val">9.6万</div></div><div class="hbar-row"><div class="hbar-label" title="咨询">咨询</div><div class="hbar-track"><div class="hbar-fill" style="width:0.3%;background:linear-gradient(90deg,#059669,#34d399);box-shadow:0 0 12px #05966955"></div></div><div class="hbar-val">1.3万</div></div><div class="hbar-row"><div class="hbar-label" title="平台与支撑业务">平台与支撑业务</div><div class="hbar-track"><div class="hbar-fill" style="width:0.1%;background:linear-gradient(90deg,#d97706,#fbbf24);box-shadow:0 0 12px #d9770655"></div></div><div class="hbar-val">5,801</div></div><div class="hbar-row"><div class="hbar-label" title="ICT运维服务">ICT运维服务</div><div class="hbar-track"><div class="hbar-fill" style="width:0.1%;background:linear-gradient(90deg,#db2777,#f472b6);box-shadow:0 0 12px #db277755"></div></div><div class="hbar-val">5,568</div></div><div class="hbar-row"><div class="hbar-label" title="数据治理与分析">数据治理与分析</div><div class="hbar-track"><div class="hbar-fill" style="width:0.0%;background:linear-gradient(90deg,#4f46e5,#818cf8);box-shadow:0 0 12px #4f46e555"></div></div><div class="hbar-val">1,899</div></div><div class="hbar-row"><div class="hbar-label" title="交付项目管理">交付项目管理</div><div class="hbar-track"><div class="hbar-fill" style="width:0.0%;background:linear-gradient(90deg,#0d9488,#2dd4bf);box-shadow:0 0 12px #0d948855"></div></div><div class="hbar-val">1,458</div></div><div class="hbar-row"><div class="hbar-label" title="能力发展服务">能力发展服务</div><div class="hbar-track"><div class="hbar-fill" style="width:0.0%;background:linear-gradient(90deg,#ea580c,#fb923c);box-shadow:0 0 12px #ea580c55"></div></div><div class="hbar-val">1,202</div></div></div></div></div>
+</div>
+<div class="grid-2" style="margin-top:16px">
+  <div class="card">
+    <div class="card-title">EC2 主机资源利用率</div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>主机名称</th><th class="num">CPU 峰值</th><th class="num">CPU P95</th><th class="num">内存峰值</th><th class="num">内存 P95</th></tr></thead>
+      <tbody>
+        <tr><td>kwephis41482604</td><td class="num highlight">18.70%</td><td class="num">2.36%</td><td class="num">39.60%</td><td class="num">38.90%</td></tr>
+        <tr><td>kwephis41482609</td><td class="num">17.20%</td><td class="num">1.63%</td><td class="num">34.40%</td><td class="num">33.80%</td></tr>
+        <tr><td>kwephis41482613</td><td class="num">13.30%</td><td class="num">1.27%</td><td class="num">29.90%</td><td class="num">28.80%</td></tr>
+        <tr><td>kwephis41482598</td><td class="num">11.10%</td><td class="num">1.30%</td><td class="num">33.60%</td><td class="num">31.50%</td></tr>
+      </tbody>
+    </table></div>
+    <div class="meter-grid" style="margin-top:16px">
+      <div class="meter"><div class="meter-title">EC2 CPU 平均 / 峰值</div><div class="meter-bar"><div class="meter-fill" style="width:1.64%;background:#3b82f6"></div></div><div class="meter-stats"><span>平均 1.64%</span><span>峰值 18.7%</span></div></div>
+      <div class="meter"><div class="meter-title">EC2 内存平均 / 峰值</div><div class="meter-bar"><div class="meter-fill" style="width:33%;background:#22c55e"></div></div><div class="meter-stats"><span>平均 33%</span><span>峰值 39.60%</span></div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">CSS / MySQL 资源概览</div>
+    <div class="meter-grid">
+      <div class="meter"><div class="meter-title">CSS CPU</div><div class="meter-bar"><div class="meter-fill" style="width:30%;background:#f59e0b"></div></div><div class="meter-stats"><span>30%</span></div></div>
+      <div class="meter"><div class="meter-title">CSS 内存</div><div class="meter-bar"><div class="meter-fill" style="width:48%;background:#a855f7"></div></div><div class="meter-stats"><span>48%</span></div></div>
+      <div class="meter"><div class="meter-title">CSS 存储（27TB）</div><div class="meter-bar"><div class="meter-fill" style="width:74%;background:#ef4444"></div></div><div class="meter-stats"><span>74%</span></div></div>
+      <div class="meter"><div class="meter-title">MySQL 存储</div><div class="meter-bar"><div class="meter-fill" style="width:84.05%;background:#ef4444"></div></div><div class="meter-stats"><span>84.05%</span><span style="color:#fbbf24">已告警</span></div></div>
+      <div class="meter" style="grid-column:span 2"><div class="meter-title">MySQL CPU / 内存</div><div class="meter-bar"><div class="meter-fill" style="width:70.5%;background:#06b6d4"></div></div><div class="meter-stats"><span>CPU 2.27%</span><span>内存 70.5%</span></div></div>
+    </div>
+  </div>
+</div>
+</section>
+
+<section id="maas" class="section">
+<div class="section-title"><span class="section-num">五</span>GTS MaaS 大模型服务</div>
+<div class="grid-2">
+  <div class="card chart-card"><div class="card-title">各模型 Token 消耗分布</div><div class="chart-card-body"><div class="donut-wrap-side"><svg class="donut-svg" width="280" height="280" viewBox="0 0 280 280"><defs><linearGradient id="dg0" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#3b82f6"/><stop offset="100%" stop-color="#60a5fa"/></linearGradient><linearGradient id="dg1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#22c55e"/><stop offset="100%" stop-color="#4ade80"/></linearGradient><linearGradient id="dg2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f59e0b"/><stop offset="100%" stop-color="#fbbf24"/></linearGradient><linearGradient id="dg3" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ef4444"/><stop offset="100%" stop-color="#f87171"/></linearGradient><linearGradient id="dg4" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#a855f7"/><stop offset="100%" stop-color="#c084fc"/></linearGradient><linearGradient id="dg5" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#06b6d4"/><stop offset="100%" stop-color="#22d3ee"/></linearGradient></defs><path d="M140.0,40.0 A100,100 0 1,1 47.4,177.9 L86.3,162.0 A58,58 0 1,0 140.0,82.0Z" fill="url(#dg0)" stroke="#1e293b" stroke-width="2.5"><title>Qwen-S-pro: 2.38亿 (68.8%)</title></path><path d="M47.4,177.9 A100,100 0 0,1 112.0,44.0 L123.7,84.3 A58,58 0 0,0 86.3,162.0Z" fill="url(#dg1)" stroke="#1e293b" stroke-width="2.5"><title>DeepSeek-R1: 9212.4万 (26.7%)</title></path><path d="M112.0,44.0 A100,100 0 0,1 128.5,40.7 L133.3,82.4 A58,58 0 0,0 123.7,84.3Z" fill="url(#dg2)" stroke="#1e293b" stroke-width="2.5"><title>GTSLLM-Pro-Moe: 926.6万 (2.7%)</title></path><path d="M128.5,40.7 A100,100 0 0,1 139.5,40.0 L139.7,82.0 A58,58 0 0,0 133.3,82.4Z" fill="url(#dg3)" stroke="#1e293b" stroke-width="2.5"><title>GTSLLM-VL-Standard: 609.9万 (1.8%)</title></path><path d="M139.5,40.0 A100,100 0 0,1 140.0,40.0 L140.0,82.0 A58,58 0 0,0 139.7,82.0Z" fill="url(#dg4)" stroke="#1e293b" stroke-width="2.5"><title>GTSLLM-Lite-Moe: 23.7万 (0.1%)</title></path><path d="M140.0,40.0 A100,100 0 0,1 140.0,40.0 L140.0,82.0 A58,58 0 0,0 140.0,82.0Z" fill="url(#dg5)" stroke="#1e293b" stroke-width="2.5"><title>Pangu-S-pocket: 1.5万 (0.0%)</title></path></svg><div class="donut-legend"><div class="legend-item"><span class="legend-dot" style="background:linear-gradient(135deg,#3b82f6,#60a5fa)"></span><span class="legend-label">Qwen-S-pro</span><span class="legend-val">68.8%</span></div><div class="legend-item"><span class="legend-dot" style="background:linear-gradient(135deg,#22c55e,#4ade80)"></span><span class="legend-label">DeepSeek-R1</span><span class="legend-val">26.7%</span></div><div class="legend-item"><span class="legend-dot" style="background:linear-gradient(135deg,#f59e0b,#fbbf24)"></span><span class="legend-label">GTSLLM-Pro-Moe</span><span class="legend-val">2.7%</span></div><div class="legend-item"><span class="legend-dot" style="background:linear-gradient(135deg,#ef4444,#f87171)"></span><span class="legend-label">GTSLLM-VL-Standard</span><span class="legend-val">1.8%</span></div><div class="legend-item"><span class="legend-dot" style="background:linear-gradient(135deg,#a855f7,#c084fc)"></span><span class="legend-label">GTSLLM-Lite-Moe</span><span class="legend-val">0.1%</span></div><div class="legend-item"><span class="legend-dot" style="background:linear-gradient(135deg,#06b6d4,#22d3ee)"></span><span class="legend-label">Pangu-S-pocket</span><span class="legend-val">0.0%</span></div></div></div></div></div>
+  <div class="card chart-card"><div class="card-title">各 APPID Token 消耗</div><div class="chart-card-body"><div class="vbar-chart"><div class="vbar-item"><div class="vbar-bar-wrap"><div class="vbar-bar" style="height:100.0%;background:linear-gradient(0deg,#2563eb,#60a5fa);box-shadow:0 -4px 16px #2563eb44" title="S02638: 2.27亿"></div></div><div class="vbar-label">S02638</div><div class="vbar-val">2.27亿</div></div><div class="vbar-item"><div class="vbar-bar-wrap"><div class="vbar-bar" style="height:51.9%;background:linear-gradient(0deg,#7c3aed,#a78bfa);box-shadow:0 -4px 16px #7c3aed44" title="S007555: 1.18亿"></div></div><div class="vbar-label">S007555</div><div class="vbar-val">1.18亿</div></div></div></div></div>
+</div>
+<div class="card" style="margin-top:16px">
+  <div class="card-title" style="text-align:left">模型调用明细表</div>
+  <div class="table-wrap"><table>
+    <thead><tr><th>APPID</th><th>模型</th><th class="num">消耗 Token</th><th class="num">调用次数</th></tr></thead>
+    <tbody><tr><td>S007555</td><td>Qwen-S-pro</td><td class="num highlight">117,480,718</td><td class="num">55,128</td></tr>
+<tr><td>S007555</td><td>GTSLLM-Pro-Moe</td><td class="num highlight">473,694</td><td class="num">73</td></tr>
+<tr><td>S007555</td><td>GTSLLM-Lite-Moe</td><td class="num highlight">84,653</td><td class="num">209</td></tr>
+<tr><td>S007555</td><td>Pangu-S-pocket</td><td class="num highlight">15,381</td><td class="num">32</td></tr>
+<tr><td>S02638</td><td>Qwen-S-pro</td><td class="num highlight">120,319,475</td><td class="num">55,223</td></tr>
+<tr><td>S02638</td><td>DeepSeek-R1</td><td class="num highlight">92,124,259</td><td class="num">34,119</td></tr>
+<tr><td>S02638</td><td>GTSLLM-Pro-Moe</td><td class="num highlight">8,792,699</td><td class="num">2,797</td></tr>
+<tr><td>S02638</td><td>GTSLLM-VL-Standard</td><td class="num highlight">6,099,178</td><td class="num">2,429</td></tr>
+<tr><td>S02638</td><td>GTSLLM-Lite-Moe</td><td class="num highlight">152,470</td><td class="num">60</td></tr></tbody>
+  </table></div>
+</div>
+</section>
+
+<section id="actions" class="section">
+<div class="section-title"><span class="section-num">六</span>问题与改进</div>
+<div class="action-list">
+  <div class="action-item"><div class="action-icon warn">⚠️</div><div class="action-content"><h4>【解析】其他失败原因占比过大</h4><p>失败原因不明，占比较大（1,648 次）。需解析组优化解析结果返回，给出修复计划。</p></div><div class="action-meta"><div class="action-owner">尹林枫</div><div class="action-deadline">截止：7月30日前</div></div></div>
+  <div class="action-item"><div class="action-icon danger">🗄️</div><div class="action-content"><h4>MySQL 资源存储超过 80%，已告警</h4><p>存储使用率达 84.05%。需清理日志表历史数据，后续考虑将日志存储迁移到 ES。</p></div><div class="action-meta"><div class="action-owner">郭嘉伦</div><div class="action-deadline">截止：7月30日</div></div></div>
+  <div class="action-item"><div class="action-icon info">📦</div><div class="action-content"><h4>MongoDB 资源存储不均衡</h4><p>存储使用率 83.28%，各节点分片存储不均衡。需处理分片均衡问题。</p></div><div class="action-meta"><div class="action-owner">王梁</div><div class="action-deadline">截止：7月15日</div></div></div>
+  <div class="action-item"><div class="action-icon danger">📊</div><div class="action-content"><h4>零消费语料占比过高（33.9%）</h4><p>需捞出具体数据专项分析语料价值，优化知识库质量。</p></div><div class="action-meta"><div class="action-owner">吴亦章</div><div class="action-deadline">截止：7月30日前</div></div></div>
+</div>
+<div style="margin-top:24px">
+  <div class="section-title" style="font-size:1rem;border-left-color:#a855f7">运维运营团队接口人</div>
+  <div class="contacts-grid">
+    <div class="contact-card"><div class="contact-role">知识产线 & 语料入网</div><div class="contact-name">唐熊</div><div class="contact-id">60049465</div></div>
+    <div class="contact-card"><div class="contact-role">知识搜索 & 底座知识库</div><div class="contact-name">郭嘉伦</div><div class="contact-id">30060574</div></div>
+    <div class="contact-card"><div class="contact-role">资源使用率</div><div class="contact-name">王梁</div><div class="contact-id">60086520</div></div>
+    <div class="contact-card"><div class="contact-role">GTS LLM 模型</div><div class="contact-name">常宏</div><div class="contact-id">30056551</div></div>
+  </div>
+</div>
+</section>
+
+<div class="footer">知识底座运维运营周报看板 · 数据周期 2026-06-29 ~ 2026-07-05 · 编制：知识底座运维组 · 离线版</div>
+</div>
+<script>
+document.querySelectorAll('.nav-tab').forEach(tab=>{
+  tab.addEventListener('click',e=>{
+    e.preventDefault();
+    document.querySelector(tab.getAttribute('href'))?.scrollIntoView({behavior:'smooth'});
+  });
+});
+window.addEventListener('scroll',()=>{
+  let cur='';
+  document.querySelectorAll('.section').forEach(s=>{if(window.scrollY>=s.offsetTop-120)cur=s.id});
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.toggle('active',t.getAttribute('href')==='#'+cur));
+});
+</script>
+</body>
+</html>
