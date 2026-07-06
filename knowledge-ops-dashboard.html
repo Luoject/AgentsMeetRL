@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>知识底座运维运营周报看板 | 2026-06-22 ~ 2026-06-28</title>
+    <title>知识底座运维运营周报看板 | 2026-06-29 ~ 2026-07-05</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
     <style>
         :root {
@@ -523,8 +523,8 @@
                 <p class="header-sub">编制：知识底座运维组</p>
             </div>
             <div class="header-meta">
-                <span class="badge">📅 2026-06-22 ~ 2026-06-28</span>
-                <span class="badge">📊 第26周</span>
+                <span class="badge">📅 2026-06-29 ~ 2026-07-05</span>
+                <span class="badge">📊 第27周</span>
             </div>
         </div>
     </div>
@@ -544,23 +544,23 @@
         <div class="kpi-grid">
             <div class="kpi-card blue">
                 <div class="kpi-label">知识库语料总量</div>
-                <div class="kpi-value">411.6万</div>
-                <div class="kpi-sub">本周新增 <span class="up">+92,065</span> · 日落 <span class="down">-2,344</span></div>
+                <div class="kpi-value">412.5万</div>
+                <div class="kpi-sub">本周新增 <span class="up">+169,285</span> · 日落 <span class="down">-32,575</span></div>
             </div>
             <div class="kpi-card green">
                 <div class="kpi-label">语料入网成功率</div>
-                <div class="kpi-value">99.86%</div>
-                <div class="kpi-sub">平均 SLA <span class="up">14 min/篇</span> · 处理 170,949 篇</div>
+                <div class="kpi-value">99.63%</div>
+                <div class="kpi-sub">平均 SLA <span class="warn" style="color:#fbbf24">31 min/篇</span> · 入网 106,261 篇</div>
             </div>
             <div class="kpi-card orange">
                 <div class="kpi-label">搜索服务调用次数</div>
-                <div class="kpi-value">66.3万</div>
-                <div class="kpi-sub">较上周 <span class="up">+43,899</span> · 峰值 QPS <span class="up">43</span></div>
+                <div class="kpi-value">51.8万</div>
+                <div class="kpi-sub">较上周 <span class="down">-144,020</span> · 峰值 QPS <span class="up">43</span></div>
             </div>
             <div class="kpi-card purple">
                 <div class="kpi-label">模型 Token 消耗总量</div>
-                <div class="kpi-value">3.61亿</div>
-                <div class="kpi-sub">主力模型 Qwen-S-pro · 调用 116,856 次</div>
+                <div class="kpi-value">2.96亿</div>
+                <div class="kpi-sub">主力模型 Qwen-S-pro · 调用 48,470 次</div>
             </div>
         </div>
     </section>
@@ -570,9 +570,20 @@
         <div class="section-title"><span class="section-num">二</span>底座知识库</div>
         <div class="grid-2">
             <div class="card">
-                <div class="card-title">本周新增语料 Top 知识组</div>
-                <div class="chart-wrap">
-                    <canvas id="chartKnowledgeGroups"></canvas>
+                <div class="card-title">本周语料 Top3 知识组</div>
+                <div style="padding:12px 8px">
+                    <div class="progress-row" style="margin-bottom:16px">
+                        <div style="width:32px;height:32px;background:#fbbf24;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;color:#1e293b;flex-shrink:0">1</div>
+                        <div style="font-size:1rem;font-weight:600;padding-left:8px">ICT网络技术</div>
+                    </div>
+                    <div class="progress-row" style="margin-bottom:16px">
+                        <div style="width:32px;height:32px;background:#94a3b8;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;color:#1e293b;flex-shrink:0">2</div>
+                        <div style="font-size:1rem;font-weight:600;padding-left:8px">ICT运维服务</div>
+                    </div>
+                    <div class="progress-row">
+                        <div style="width:32px;height:32px;background:#cd7f32;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;color:#1e293b;flex-shrink:0">3</div>
+                        <div style="font-size:1rem;font-weight:600;padding-left:8px">服务业务架构设计</div>
+                    </div>
                 </div>
             </div>
             <div class="card">
@@ -607,21 +618,21 @@
         <div class="section-title"><span class="section-num">三</span>知识产线</div>
         <div class="sla-grid">
             <div class="sla-item">
-                <div class="sla-num info">170,949</div>
-                <div class="sla-desc">本周处理语料总量（篇）</div>
+                <div class="sla-num info">106,261</div>
+                <div class="sla-desc">本周语料入网总量（篇）</div>
             </div>
             <div class="sla-item">
-                <div class="sla-num success">99.86%</div>
+                <div class="sla-num success">99.63%</div>
                 <div class="sla-desc">语料解析成功率</div>
             </div>
             <div class="sla-item">
-                <div class="sla-num warn">14 min</div>
+                <div class="sla-num warn">31 min</div>
                 <div class="sla-desc">语料入网平均 SLA / 篇</div>
             </div>
         </div>
         <div class="grid-2">
             <div class="card">
-                <div class="card-title">语料入网失败原因分布（237 篇失败）</div>
+                <div class="card-title">语料入网失败原因分布（387 篇失败 · 3,224 个失败文件）</div>
                 <div class="chart-wrap tall">
                     <canvas id="chartFailures"></canvas>
                 </div>
@@ -629,6 +640,26 @@
             <div class="card">
                 <div class="card-title">失败原因明细</div>
                 <div id="failureBars" style="padding-top:8px"></div>
+            </div>
+        </div>
+        <div class="card" style="margin-top:16px">
+            <div class="card-title" style="text-align:left">MongoDB 资源利用率</div>
+            <div class="meter-grid">
+                <div class="meter">
+                    <div class="meter-title">CPU 使用率</div>
+                    <div class="meter-bar"><div class="meter-fill" style="width:23.26%;background:#3b82f6"></div></div>
+                    <div class="meter-stats"><span>23.26%</span></div>
+                </div>
+                <div class="meter">
+                    <div class="meter-title">内存使用率</div>
+                    <div class="meter-bar"><div class="meter-fill" style="width:85.5%;background:#f59e0b"></div></div>
+                    <div class="meter-stats"><span>85.5%</span></div>
+                </div>
+                <div class="meter" style="grid-column: span 2">
+                    <div class="meter-title">存储使用率</div>
+                    <div class="meter-bar"><div class="meter-fill" style="width:83.28%;background:#ef4444"></div></div>
+                    <div class="meter-stats"><span>83.28%</span><span style="color:#fbbf24">分片存储不均衡</span></div>
+                </div>
             </div>
         </div>
     </section>
@@ -639,8 +670,8 @@
         <div class="kpi-grid" style="grid-template-columns: repeat(3,1fr); margin-bottom:16px">
             <div class="kpi-card blue">
                 <div class="kpi-label">搜索消费语料</div>
-                <div class="kpi-value" style="font-size:1.4rem">805,502 篇</div>
-                <div class="kpi-sub">占知识库总量 <span class="up">19.08%</span></div>
+                <div class="kpi-value" style="font-size:1.4rem">762,115 篇</div>
+                <div class="kpi-sub">占知识库总量 <span class="up">18.44%</span></div>
             </div>
             <div class="kpi-card orange">
                 <div class="kpi-label">零消费语料占比</div>
@@ -648,9 +679,9 @@
                 <div class="kpi-sub">需专项分析语料价值</div>
             </div>
             <div class="kpi-card green">
-                <div class="kpi-label">CSS 集群存储</div>
-                <div class="kpi-value" style="font-size:1.4rem; color:#4ade80">74%</div>
-                <div class="kpi-sub">总容量 27TB · CPU 30% · 内存 48%</div>
+                <div class="kpi-label">MySQL 存储使用率</div>
+                <div class="kpi-value" style="font-size:1.4rem; color:#ef4444">84.05%</div>
+                <div class="kpi-sub">已超 80% 告警阈值 · CPU 2.27%</div>
             </div>
         </div>
         <div class="grid-2">
@@ -661,7 +692,7 @@
                 </div>
             </div>
             <div class="card">
-                <div class="card-title">知识组搜索命中 Top 10</div>
+                <div class="card-title">知识组搜索命中 Top 9</div>
                 <div class="chart-wrap tall">
                     <canvas id="chartSearchHits"></canvas>
                 </div>
@@ -675,40 +706,40 @@
                         <thead>
                             <tr>
                                 <th>主机名称</th>
-                                <th class="num">CPU 均值</th>
                                 <th class="num">CPU 峰值</th>
-                                <th class="num">内存均值</th>
+                                <th class="num">CPU P95</th>
                                 <th class="num">内存峰值</th>
+                                <th class="num">内存 P95</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <td>kwephis41482604</td>
-                                <td class="num">2.13%</td>
-                                <td class="num highlight">19.80%</td>
-                                <td class="num">40.20%</td>
-                                <td class="num">47.80%</td>
+                                <td class="num highlight">18.70%</td>
+                                <td class="num">2.36%</td>
+                                <td class="num">39.60%</td>
+                                <td class="num">38.90%</td>
                             </tr>
                             <tr>
                                 <td>kwephis41482609</td>
-                                <td class="num">1.81%</td>
-                                <td class="num">19.30%</td>
-                                <td class="num">31.70%</td>
-                                <td class="num">35.50%</td>
-                            </tr>
-                            <tr>
-                                <td>kwephis41482598</td>
-                                <td class="num">1.31%</td>
-                                <td class="num">9.40%</td>
-                                <td class="num">29.40%</td>
-                                <td class="num">38.70%</td>
+                                <td class="num">17.20%</td>
+                                <td class="num">1.63%</td>
+                                <td class="num">34.40%</td>
+                                <td class="num">33.80%</td>
                             </tr>
                             <tr>
                                 <td>kwephis41482613</td>
-                                <td class="num">1.41%</td>
-                                <td class="num">11.40%</td>
-                                <td class="num">25.40%</td>
-                                <td class="num">28.10%</td>
+                                <td class="num">13.30%</td>
+                                <td class="num">1.27%</td>
+                                <td class="num">29.90%</td>
+                                <td class="num">28.80%</td>
+                            </tr>
+                            <tr>
+                                <td>kwephis41482598</td>
+                                <td class="num">11.10%</td>
+                                <td class="num">1.30%</td>
+                                <td class="num">33.60%</td>
+                                <td class="num">31.50%</td>
                             </tr>
                         </tbody>
                     </table>
@@ -716,33 +747,43 @@
                 <div class="meter-grid" style="margin-top:16px">
                     <div class="meter">
                         <div class="meter-title">EC2 CPU 平均 / 峰值</div>
-                        <div class="meter-bar"><div class="meter-fill" style="width:1.71%;background:#3b82f6"></div></div>
-                        <div class="meter-stats"><span>平均 1.71%</span><span>峰值 19.8%</span></div>
+                        <div class="meter-bar"><div class="meter-fill" style="width:1.64%;background:#3b82f6"></div></div>
+                        <div class="meter-stats"><span>平均 1.64%</span><span>峰值 18.7%</span></div>
                     </div>
                     <div class="meter">
                         <div class="meter-title">EC2 内存平均 / 峰值</div>
-                        <div class="meter-bar"><div class="meter-fill" style="width:31.68%;background:#22c55e"></div></div>
-                        <div class="meter-stats"><span>平均 31.68%</span><span>峰值 47.8%</span></div>
+                        <div class="meter-bar"><div class="meter-fill" style="width:33%;background:#22c55e"></div></div>
+                        <div class="meter-stats"><span>平均 33%</span><span>峰值 39.60%</span></div>
                     </div>
                 </div>
             </div>
             <div class="card">
-                <div class="card-title">CSS 集群资源概览</div>
+                <div class="card-title">CSS / MySQL 资源概览</div>
                 <div class="meter-grid">
                     <div class="meter">
-                        <div class="meter-title">CPU 使用率</div>
+                        <div class="meter-title">CSS CPU 使用率</div>
                         <div class="meter-bar"><div class="meter-fill" style="width:30%;background:#f59e0b"></div></div>
                         <div class="meter-stats"><span>平均 30%</span></div>
                     </div>
                     <div class="meter">
-                        <div class="meter-title">内存使用率</div>
+                        <div class="meter-title">CSS 内存使用率</div>
                         <div class="meter-bar"><div class="meter-fill" style="width:48%;background:#a855f7"></div></div>
                         <div class="meter-stats"><span>平均 48%</span></div>
                     </div>
-                    <div class="meter" style="grid-column: span 2">
-                        <div class="meter-title">存储使用率（27TB 总容量）</div>
+                    <div class="meter">
+                        <div class="meter-title">CSS 存储（27TB 总容量）</div>
                         <div class="meter-bar"><div class="meter-fill" style="width:74%;background:#ef4444"></div></div>
-                        <div class="meter-stats"><span>已使用 74%</span><span>约 19.98 TB</span></div>
+                        <div class="meter-stats"><span>已使用 74%</span></div>
+                    </div>
+                    <div class="meter">
+                        <div class="meter-title">MySQL 存储使用率</div>
+                        <div class="meter-bar"><div class="meter-fill" style="width:84.05%;background:#ef4444"></div></div>
+                        <div class="meter-stats"><span>84.05%</span><span style="color:#fbbf24">已告警</span></div>
+                    </div>
+                    <div class="meter" style="grid-column: span 2">
+                        <div class="meter-title">MySQL CPU / 内存</div>
+                        <div class="meter-bar"><div class="meter-fill" style="width:70.5%;background:#06b6d4"></div></div>
+                        <div class="meter-stats"><span>CPU 2.27%</span><span>内存 70.5%</span></div>
                     </div>
                 </div>
             </div>
@@ -792,7 +833,7 @@
                 <div class="action-icon warn">⚠️</div>
                 <div class="action-content">
                     <h4>【解析】其他失败原因占比过大</h4>
-                    <p>语料失败原因中"【解析】其他"失败原因不明，占比较大（1,858 次）。需解析组优化解析结果返回，给出修复计划。</p>
+                    <p>语料失败原因中"【解析】其他"失败原因不明，占比较大（1,648 次）。需解析组优化解析结果返回，给出修复计划。</p>
                 </div>
                 <div class="action-meta">
                     <div class="action-owner">尹林枫</div>
@@ -800,14 +841,25 @@
                 </div>
             </div>
             <div class="action-item">
-                <div class="action-icon info">📉</div>
+                <div class="action-icon danger">🗄️</div>
                 <div class="action-content">
-                    <h4>搜索服务 EC2 CPU 使用率偏低</h4>
-                    <p>EC2 主机 CPU 平均使用率仅 1.71%，资源利用率不足。需分析原因并给出提升利用率计划。</p>
+                    <h4>MySQL 资源存储超过 80%，已告警</h4>
+                    <p>MySQL 存储使用率达 84.05%。需清理日志表历史数据，后续考虑将日志存储迁移到 ES。</p>
                 </div>
                 <div class="action-meta">
-                    <div class="action-owner">郭嘉伦、王梁</div>
-                    <div class="action-deadline">截止：7月30日前</div>
+                    <div class="action-owner">郭嘉伦</div>
+                    <div class="action-deadline">截止：7月30日</div>
+                </div>
+            </div>
+            <div class="action-item">
+                <div class="action-icon info">📦</div>
+                <div class="action-content">
+                    <h4>MongoDB 资源存储不均衡</h4>
+                    <p>MongoDB 存储使用率 83.28%，各节点分片存储不均衡。需处理分片均衡问题，使各节点存储均衡。</p>
+                </div>
+                <div class="action-meta">
+                    <div class="action-owner">王梁</div>
+                    <div class="action-deadline">截止：7月15日</div>
                 </div>
             </div>
             <div class="action-item">
@@ -851,7 +903,7 @@
     </section>
 
     <div class="footer">
-        知识底座运维运营周报看板 · 数据周期 2026-06-22 ~ 2026-06-28 · 编制：知识底座运维组
+        知识底座运维运营周报看板 · 数据周期 2026-06-29 ~ 2026-07-05 · 编制：知识底座运维组
     </div>
 </div>
 
@@ -869,19 +921,6 @@ function fmt(n) {
 }
 
 // --- Data ---
-const knowledgeGroups = [
-    { name: 'ICT网络技术', count: 58844 },
-    { name: '(未打标签)', count: 29664 },
-    { name: '服务业务架构设计', count: 1157 },
-    { name: 'ICT运维服务', count: 1123 },
-    { name: '服务研发技术与测试', count: 624 },
-    { name: '政企服务业务管理', count: 264 },
-    { name: '平台与支撑业务', count: 175 },
-    { name: '咨询', count: 115 },
-    { name: '交付项目管理', count: 105 },
-    { name: '能力发展服务', count: 75 },
-];
-
 const dataSources = [
     { source: 'support', section: '文档', type: '在线', count: 580290, cycle: '天级刷新', date: '2026-07-01' },
     { source: 'support', section: '案例', type: '在线', count: 119868, cycle: '天级刷新', date: '2026-07-02' },
@@ -906,35 +945,36 @@ const dataSources = [
 ];
 
 const failures = [
-    { reason: '【解析】其他', count: 1858 },
-    { reason: '【采集】数据异常，内容为空', count: 375 },
-    { reason: '【解析】解析超时', count: 357 },
-    { reason: '【解析】文件无法读取', count: 204 },
-    { reason: '【解析】文件转化失败', count: 166 },
-    { reason: '【解析】入库失败需补偿', count: 52 },
-    { reason: '【解析】解析后内容为空', count: 36 },
-    { reason: '【解析】jsonl不存在', count: 19 },
-    { reason: '【解析】内置文件为空', count: 12 },
+    { reason: '【解析】其他', count: 1648 },
+    { reason: '【采集】数据异常，内容为空', count: 622 },
+    { reason: '【解析】文件转化失败', count: 316 },
+    { reason: '【解析】入库失败需补偿', count: 307 },
+    { reason: '【解析】文件无法读取', count: 197 },
+    { reason: '【解析】解析后内容为空', count: 72 },
+    { reason: '【解析】任务超时', count: 24 },
     { reason: '【解析】文件解压缩失败', count: 11 },
+    { reason: '【解析】内置文件为空', count: 11 },
+    { reason: '【解析】解析超时', count: 9 },
+    { reason: '【解析】jsonl不存在', count: 5 },
+    { reason: '【解析】S3文件下载失败', count: 2 },
 ];
 
 const searchApps = [
-    { name: 'Webot智能问答', count: 130777 },
-    { name: 'GTS LLM 体验中心', count: 1499 },
-    { name: 'Getit谛听', count: 656 },
+    { name: '服务智能体体验中心', count: 424386 },
+    { name: 'Webot智能问答', count: 82568 },
+    { name: '知识一张网应用侧', count: 1701 },
 ];
 
 const searchHits = [
-    { name: 'ICT网络技术', hits: 6577984, pct: 94.20 },
-    { name: '服务业务架构设计', hits: 136551, pct: 1.96 },
-    { name: '政企服务业务管理', hits: 119485, pct: 1.71 },
-    { name: '云核心网', hits: 42311, pct: 0.61 },
-    { name: '全球共享服务中心', hits: 14486, pct: 0.21 },
-    { name: '咨询', hits: 13810, pct: 0.20 },
-    { name: '中国区技术交付', hits: 7462, pct: 0.11 },
-    { name: 'ICT运维服务', hits: 7014, pct: 0.10 },
-    { name: '商业咨询', hits: 6387, pct: 0.09 },
-    { name: '平台与支撑业务', hits: 6338, pct: 0.09 },
+    { name: 'ICT网络技术', hits: 5019836 },
+    { name: '服务架构设计', hits: 128593 },
+    { name: '政企服务业务管理', hits: 95842 },
+    { name: '咨询', hits: 13283 },
+    { name: '平台与支撑业务', hits: 5801 },
+    { name: 'ICT运维服务', hits: 5568 },
+    { name: '数据治理与分析', hits: 1899 },
+    { name: '交付项目管理', hits: 1458 },
+    { name: '能力发展服务', hits: 1202 },
 ];
 
 const maasData = [
@@ -942,16 +982,13 @@ const maasData = [
     { app: 'S007555', model: 'GTSLLM-Pro-Moe', tokens: 473694, calls: 73 },
     { app: 'S007555', model: 'GTSLLM-Lite-Moe', tokens: 84653, calls: 209 },
     { app: 'S007555', model: 'Pangu-S-pocket', tokens: 15381, calls: 32 },
+    { app: 'S007555', model: 'DeepSeek-R1', tokens: 0, calls: 0 },
+    { app: 'S007555', model: 'GTSLLM-VL-Standard', tokens: 0, calls: 0 },
     { app: 'S02638', model: 'Qwen-S-pro', tokens: 120319475, calls: 55223 },
     { app: 'S02638', model: 'DeepSeek-R1', tokens: 92124259, calls: 34119 },
     { app: 'S02638', model: 'GTSLLM-Pro-Moe', tokens: 8792699, calls: 2797 },
     { app: 'S02638', model: 'GTSLLM-VL-Standard', tokens: 6099178, calls: 2429 },
     { app: 'S02638', model: 'GTSLLM-Lite-Moe', tokens: 152470, calls: 60 },
-    { app: 'S007556', model: 'Qwen-S-pro', tokens: 12383157, calls: 6503 },
-    { app: 'S007556', model: 'DeepSeek-R1', tokens: 2989722, calls: 340 },
-    { app: 'S007556', model: 'GTSLLM-Pro-Moe', tokens: 22907, calls: 19 },
-    { app: 'S007556', model: 'GTSLLM-Lite-Moe', tokens: 38255, calls: 75 },
-    { app: 'gtstools', model: 'Qwen-S-pro', tokens: 10597, calls: 2 },
 ];
 
 // --- Populate tables ---
@@ -995,39 +1032,6 @@ const chartOpts = {
         legend: { labels: { padding: 12, boxWidth: 12 } }
     }
 };
-
-// Knowledge groups horizontal bar
-new Chart(document.getElementById('chartKnowledgeGroups'), {
-    type: 'bar',
-    data: {
-        labels: knowledgeGroups.map(k => k.name),
-        datasets: [{
-            label: '新增语料（篇）',
-            data: knowledgeGroups.map(k => k.count),
-            backgroundColor: COLORS.map(c => c + 'cc'),
-            borderColor: COLORS,
-            borderWidth: 1,
-            borderRadius: 4,
-        }]
-    },
-    options: {
-        ...chartOpts,
-        indexAxis: 'y',
-        plugins: {
-            ...chartOpts.plugins,
-            legend: { display: false },
-            tooltip: {
-                callbacks: {
-                    label: ctx => ` ${ctx.parsed.x.toLocaleString('zh-CN')} 篇`
-                }
-            }
-        },
-        scales: {
-            x: { grid: { color: 'rgba(71,85,105,0.3)' }, ticks: { callback: v => fmt(v) } },
-            y: { grid: { display: false } }
-        }
-    }
-});
 
 // Data sources doughnut (aggregated by source)
 const sourceAgg = {};
