@@ -7,6 +7,18 @@ from pathlib import Path
 OUTPUT = Path("知识底座运维周报看板.html")
 COLORS = ["#3b82f6", "#22c55e", "#f59e0b", "#ef4444", "#a855f7", "#06b6d4",
           "#ec4899", "#84cc16", "#f97316", "#6366f1", "#14b8a6", "#e879f9"]
+# 柱状图渐变色（起止色对）
+BAR_GRADIENTS = [
+    ("#2563eb", "#60a5fa"), ("#7c3aed", "#a78bfa"), ("#0891b2", "#22d3ee"),
+    ("#059669", "#34d399"), ("#d97706", "#fbbf24"), ("#db2777", "#f472b6"),
+    ("#4f46e5", "#818cf8"), ("#0d9488", "#2dd4bf"), ("#ea580c", "#fb923c"),
+]
+DONUT_GRADIENTS = [
+    ("#3b82f6", "#60a5fa"), ("#22c55e", "#4ade80"), ("#f59e0b", "#fbbf24"),
+    ("#ef4444", "#f87171"), ("#a855f7", "#c084fc"), ("#06b6d4", "#22d3ee"),
+    ("#ec4899", "#f472b6"), ("#84cc16", "#a3e635"), ("#f97316", "#fb923c"),
+    ("#6366f1", "#818cf8"), ("#14b8a6", "#2dd4bf"), ("#e879f9", "#f0abfc"),
+]
 
 DATA_SOURCES = [
     ("support", "文档", "在线", 580290, "天级刷新", "2026-07-01"),
@@ -91,11 +103,17 @@ def fmt(n):
     return f"{n:,}"
 
 
-def donut_svg(items, size=220, cx=None, cy=None, r=80, ir=50):
+def donut_svg(items, size=300, cx=None, cy=None, r=110, ir=62, legend_side=False):
     cx = cx or size // 2
     cy = cy or size // 2
     total = sum(v for _, v in items) or 1
-    paths, legends = [], []
+    defs, paths, legends = [], [], []
+    for i, _ in enumerate(items):
+        c1, c2 = DONUT_GRADIENTS[i % len(DONUT_GRADIENTS)]
+        defs.append(
+            f'<linearGradient id="dg{i}" x1="0%" y1="0%" x2="100%" y2="100%">'
+            f'<stop offset="0%" stop-color="{c1}"/><stop offset="100%" stop-color="{c2}"/></linearGradient>'
+        )
     angle = -90
     for i, (label, val) in enumerate(items):
         pct = val / total
@@ -108,23 +126,30 @@ def donut_svg(items, size=220, cx=None, cy=None, r=80, ir=50):
         x1i, y1i = cx + ir * math.cos(a2), cy + ir * math.sin(a2)
         x2i, y2i = cx + ir * math.cos(a1), cy + ir * math.sin(a1)
         large = 1 if sweep > 180 else 0
-        color = COLORS[i % len(COLORS)]
+        c1, c2 = DONUT_GRADIENTS[i % len(DONUT_GRADIENTS)]
         paths.append(
             f'<path d="M{x1o:.1f},{y1o:.1f} A{r},{r} 0 {large},1 {x2o:.1f},{y2o:.1f} '
             f'L{x1i:.1f},{y1i:.1f} A{ir},{ir} 0 {large},0 {x2i:.1f},{y2i:.1f}Z" '
-            f'fill="{color}" stroke="#1e293b" stroke-width="2"><title>{label}: {fmt(val)} ({pct*100:.1f}%)</title></path>'
+            f'fill="url(#dg{i})" stroke="#1e293b" stroke-width="2.5"><title>{label}: {fmt(val)} ({pct*100:.1f}%)</title></path>'
         )
         legends.append(
-            f'<div class="legend-item"><span class="legend-dot" style="background:{color}"></span>'
+            f'<div class="legend-item"><span class="legend-dot" style="background:linear-gradient(135deg,{c1},{c2})"></span>'
             f'<span class="legend-label">{label}</span><span class="legend-val">{pct*100:.1f}%</span></div>'
         )
         angle += sweep
+    layout = "donut-wrap-side" if legend_side else "donut-wrap-stack"
     svg = (
-        f'<div class="donut-wrap"><svg width="{size}" height="{size}" viewBox="0 0 {size} {size}">'
-        + "".join(paths) + "</svg>"
+        f'<div class="{layout}">'
+        f'<svg class="donut-svg" width="{size}" height="{size}" viewBox="0 0 {size} {size}">'
+        f'<defs>{"".join(defs)}</defs>{"".join(paths)}</svg>'
         f'<div class="donut-legend">{"".join(legends)}</div></div>'
     )
     return svg
+
+
+def bar_gradient(i):
+    c1, c2 = BAR_GRADIENTS[i % len(BAR_GRADIENTS)]
+    return f"linear-gradient(90deg,{c1},{c2})"
 
 
 def hbar_chart(items, max_label_len=14):
@@ -132,11 +157,12 @@ def hbar_chart(items, max_label_len=14):
     rows = []
     for i, (label, val) in enumerate(items):
         w = val / mx * 100
-        color = COLORS[i % len(COLORS)]
+        grad = bar_gradient(i)
+        c1, _ = BAR_GRADIENTS[i % len(BAR_GRADIENTS)]
         short = label if len(label) <= max_label_len else label[:max_label_len - 1] + "…"
         rows.append(
             f'<div class="hbar-row"><div class="hbar-label" title="{label}">{short}</div>'
-            f'<div class="hbar-track"><div class="hbar-fill" style="width:{w:.1f}%;background:{color}"></div></div>'
+            f'<div class="hbar-track"><div class="hbar-fill" style="width:{w:.1f}%;background:{grad};box-shadow:0 0 12px {c1}55"></div></div>'
             f'<div class="hbar-val">{fmt(val)}</div></div>'
         )
     return '<div class="hbar-chart">' + "".join(rows) + "</div>"
@@ -147,11 +173,12 @@ def vbar_chart(items):
     bars = []
     for i, (label, val) in enumerate(items):
         h = val / mx * 100
-        color = COLORS[i % len(COLORS)]
-        short = label if len(label) <= 8 else label[:7] + "…"
+        grad = bar_gradient(i).replace("90deg", "0deg")
+        c1, _ = BAR_GRADIENTS[i % len(BAR_GRADIENTS)]
+        short = label if len(label) <= 10 else label[:9] + "…"
         bars.append(
             f'<div class="vbar-item"><div class="vbar-bar-wrap">'
-            f'<div class="vbar-bar" style="height:{h:.1f}%;background:{color}" title="{label}: {fmt(val)}"></div></div>'
+            f'<div class="vbar-bar" style="height:{h:.1f}%;background:{grad};box-shadow:0 -4px 16px {c1}44" title="{label}: {fmt(val)}"></div></div>'
             f'<div class="vbar-label">{short}</div><div class="vbar-val">{fmt(val)}</div></div>'
         )
     return '<div class="vbar-chart">' + "".join(bars) + "</div>"
@@ -162,10 +189,10 @@ def progress_bars(items):
     rows = []
     for i, (label, val) in enumerate(items):
         w = val / mx * 100
-        color = COLORS[i % len(COLORS)]
+        grad = bar_gradient(i)
         rows.append(
             f'<div class="progress-row"><div class="progress-label" title="{label}">{label}</div>'
-            f'<div class="progress-track"><div class="progress-fill" style="width:{w:.1f}%;background:{color}"></div></div>'
+            f'<div class="progress-track"><div class="progress-fill" style="width:{w:.1f}%;background:{grad}"></div></div>'
             f'<div class="progress-val">{val:,}</div></div>'
         )
     return "".join(rows)
@@ -263,24 +290,29 @@ tr:hover td{{background:rgba(59,130,246,.05)}}
 .progress-track{{flex:1;height:8px;background:var(--surface-2);border-radius:4px;overflow:hidden}}
 .progress-fill{{height:100%;border-radius:4px}}
 .progress-val{{width:60px;text-align:right;font-size:.8rem;flex-shrink:0}}
-.donut-wrap{{display:flex;align-items:center;justify-content:center;gap:20px;flex-wrap:wrap;padding:8px}}
-.donut-legend{{display:flex;flex-direction:column;gap:6px;font-size:.78rem}}
-.legend-item{{display:flex;align-items:center;gap:8px}}
-.legend-dot{{width:10px;height:10px;border-radius:2px;flex-shrink:0}}
-.legend-label{{color:var(--muted);flex:1}}
-.legend-val{{color:var(--text);font-weight:600}}
-.hbar-chart{{padding:8px 0}}
-.hbar-row{{display:flex;align-items:center;gap:10px;margin-bottom:10px}}
-.hbar-label{{width:130px;font-size:.8rem;color:var(--muted);flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
-.hbar-track{{flex:1;height:22px;background:var(--surface-2);border-radius:4px;overflow:hidden}}
-.hbar-fill{{height:100%;border-radius:4px;transition:width .6s ease}}
-.hbar-val{{width:70px;text-align:right;font-size:.78rem;font-weight:600;flex-shrink:0}}
-.vbar-chart{{display:flex;align-items:flex-end;justify-content:space-around;height:220px;padding:0 8px;gap:8px}}
-.vbar-item{{display:flex;flex-direction:column;align-items:center;flex:1;max-width:120px;height:100%}}
-.vbar-bar-wrap{{flex:1;width:100%;display:flex;align-items:flex-end;justify-content:center}}
-.vbar-bar{{width:70%;max-width:60px;border-radius:6px 6px 0 0;min-height:4px;transition:height .6s ease}}
-.vbar-label{{font-size:.7rem;color:var(--muted);margin-top:8px;text-align:center;line-height:1.2}}
-.vbar-val{{font-size:.72rem;font-weight:600;margin-top:4px;color:var(--text)}}
+.donut-wrap-side{{display:flex;align-items:center;justify-content:center;gap:20px;padding:16px 8px;min-height:300px}}
+.donut-wrap-stack{{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:16px 8px;min-height:300px}}
+.donut-svg{{flex-shrink:0;filter:drop-shadow(0 4px 12px rgba(0,0,0,.25))}}
+.donut-legend{{display:flex;flex-direction:column;gap:7px;font-size:.8rem;flex:1;min-width:110px;max-width:200px}}
+.legend-item{{display:flex;align-items:center;gap:8px;padding:2px 0}}
+.legend-dot{{width:12px;height:12px;border-radius:3px;flex-shrink:0;box-shadow:0 1px 4px rgba(0,0,0,.3)}}
+.legend-label{{color:var(--muted);flex:1;line-height:1.3}}
+.legend-val{{color:var(--text);font-weight:600;font-size:.78rem}}
+.hbar-chart{{padding:10px 4px}}
+.hbar-row{{display:flex;align-items:center;gap:12px;margin-bottom:12px}}
+.hbar-label{{width:120px;font-size:.82rem;color:var(--muted);flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
+.hbar-track{{flex:1;height:26px;background:rgba(15,23,42,.5);border-radius:6px;overflow:hidden;border:1px solid rgba(71,85,105,.3)}}
+.hbar-fill{{height:100%;border-radius:5px;transition:width .8s cubic-bezier(.4,0,.2,1)}}
+.hbar-val{{width:72px;text-align:right;font-size:.8rem;font-weight:600;flex-shrink:0;color:#e2e8f0}}
+.vbar-chart{{display:flex;align-items:flex-end;justify-content:space-around;height:260px;padding:8px 12px 0;gap:12px}}
+.vbar-item{{display:flex;flex-direction:column;align-items:center;flex:1;max-width:140px;height:100%}}
+.vbar-bar-wrap{{flex:1;width:100%;display:flex;align-items:flex-end;justify-content:center;padding:0 4px}}
+.vbar-bar{{width:65%;max-width:72px;border-radius:8px 8px 0 0;min-height:6px;transition:height .8s cubic-bezier(.4,0,.2,1)}}
+.vbar-label{{font-size:.72rem;color:var(--muted);margin-top:10px;text-align:center;line-height:1.3;max-width:100px}}
+.vbar-val{{font-size:.75rem;font-weight:600;margin-top:5px;color:#e2e8f0}}
+.chart-card{{display:flex;flex-direction:column}}
+.chart-card .card-title{{margin-bottom:8px}}
+.chart-card-body{{flex:1;display:flex;align-items:center;justify-content:center}}
 .rank-list{{padding:8px}}
 .rank-item{{display:flex;align-items:center;gap:14px;padding:14px 12px;margin-bottom:10px;background:var(--surface-2);border-radius:10px}}
 .rank-badge{{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1rem;flex-shrink:0}}
@@ -353,9 +385,9 @@ tr:hover td{{background:rgba(59,130,246,.05)}}
       <div class="rank-item"><div class="rank-badge bronze">3</div><div><div class="rank-name">服务业务架构设计</div><div class="rank-bar"><div class="rank-bar-fill" style="width:35%"></div></div></div></div>
     </div>
   </div>
-  <div class="card">
+  <div class="card chart-card">
     <div class="card-title">语料入库概览（按数据源）</div>
-    {donut_svg(src_items, size=200, r=70, ir=42)}
+    <div class="chart-card-body">{donut_svg(src_items, size=300, r=110, ir=62, legend_side=True)}</div>
   </div>
 </div>
 <div class="card" style="margin-top:16px">
@@ -375,9 +407,9 @@ tr:hover td{{background:rgba(59,130,246,.05)}}
   <div class="sla-item"><div class="sla-num warn">31 min</div><div class="sla-desc">语料入网平均 SLA / 篇</div></div>
 </div>
 <div class="grid-2">
-  <div class="card">
+  <div class="card chart-card">
     <div class="card-title">语料入网失败原因分布（387 篇 · 3,224 文件）</div>
-    {donut_svg(FAILURES[:6], size=200, r=70, ir=42)}
+    <div class="chart-card-body">{donut_svg(FAILURES[:6], size=280, r=100, ir=58, legend_side=True)}</div>
   </div>
   <div class="card">
     <div class="card-title">失败原因明细</div>
@@ -402,8 +434,8 @@ tr:hover td{{background:rgba(59,130,246,.05)}}
   <div class="kpi-card green"><div class="kpi-label">MySQL 存储使用率</div><div class="kpi-value" style="font-size:1.4rem;color:#ef4444">84.05%</div><div class="kpi-sub">已超 80% 告警阈值 · CPU 2.27%</div></div>
 </div>
 <div class="grid-2">
-  <div class="card"><div class="card-title">调用搜索服务 Top 应用</div>{vbar_chart(SEARCH_APPS)}</div>
-  <div class="card"><div class="card-title">知识组搜索命中 Top 9</div>{hbar_chart(SEARCH_HITS)}</div>
+  <div class="card chart-card"><div class="card-title">调用搜索服务 Top 应用</div><div class="chart-card-body">{vbar_chart(SEARCH_APPS)}</div></div>
+  <div class="card chart-card"><div class="card-title">知识组搜索命中 Top 9</div><div class="chart-card-body">{hbar_chart(SEARCH_HITS)}</div></div>
 </div>
 <div class="grid-2" style="margin-top:16px">
   <div class="card">
@@ -438,8 +470,8 @@ tr:hover td{{background:rgba(59,130,246,.05)}}
 <section id="maas" class="section">
 <div class="section-title"><span class="section-num">五</span>GTS MaaS 大模型服务</div>
 <div class="grid-2">
-  <div class="card"><div class="card-title">各模型 Token 消耗分布</div>{donut_svg(model_items, size=200, r=70, ir=42)}</div>
-  <div class="card"><div class="card-title">各 APPID Token 消耗</div>{vbar_chart(app_items)}</div>
+  <div class="card chart-card"><div class="card-title">各模型 Token 消耗分布</div><div class="chart-card-body">{donut_svg(model_items, size=280, r=100, ir=58, legend_side=True)}</div></div>
+  <div class="card chart-card"><div class="card-title">各 APPID Token 消耗</div><div class="chart-card-body">{vbar_chart(app_items)}</div></div>
 </div>
 <div class="card" style="margin-top:16px">
   <div class="card-title" style="text-align:left">模型调用明细表</div>
